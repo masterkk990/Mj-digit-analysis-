@@ -1,12 +1,465 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JM Digit Analyzer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JM Digit Analyzer</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#07111f;
+  color:#fff;
+  padding:15px;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
+.header{
+  background:#101d31;
+  border:1px solid #263955;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.header h1{
+  font-size:25px;
+  margin-bottom:7px;
+}
+
+.header p{
+  color:#91a4bd;
+  font-size:14px;
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:14px;
+  color:#ffcc66;
+  font-size:14px;
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ffcc66;
+}
+
+.card{
+  background:#101d31;
+  border:1px solid #263955;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:15px;
+}
+
+.card h2{
+  font-size:17px;
+  margin-bottom:15px;
+}
+
+select,button{
+  width:100%;
+  padding:13px;
+  border-radius:10px;
+  border:1px solid #334967;
+  font-size:15px;
+}
+
+select{
+  background:#07111f;
+  color:white;
+  margin-bottom:10px;
+}
+
+button{
+  background:#1769e0;
+  color:white;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.tick{
+  text-align:center;
+  font-size:48px;
+  font-weight:bold;
+  margin:10px 0;
+}
+
+.tick-label{
+  text-align:center;
+  color:#91a4bd;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.digit{
+  background:#07111f;
+  border:1px solid #263955;
+  border-radius:10px;
+  padding:12px 5px;
+  text-align:center;
+}
+
+.digit strong{
+  display:block;
+  font-size:20px;
+  margin-bottom:5px;
+}
+
+.digit span{
+  color:#91a4bd;
+  font-size:12px;
+}
+
+.signal{
+  text-align:center;
+  padding:20px;
+  border-radius:14px;
+  background:#07111f;
+  border:1px solid #263955;
+}
+
+.signal-title{
+  color:#91a4bd;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.signal-main{
+  font-size:27px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.confidence{
+  font-size:15px;
+  color:#80d8ff;
+}
+
+.warning{
+  color:#ffcc66;
+  font-size:12px;
+  margin-top:10px;
+}
+
+.analysis-row{
+  display:flex;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid #203149;
+}
+
+.analysis-row:last-child{
+  border-bottom:none;
+}
+
+.value{
+  font-weight:bold;
+}
+
+.footer{
+  text-align:center;
+  color:#60738d;
+  font-size:12px;
+  padding:15px;
+}
+
+@media(max-width:500px){
+  .grid{
+    grid-template-columns:repeat(5,1fr);
+  }
+
+  .digit{
+    padding:9px 2px;
+  }
+}
+</style>
 </head>
 
 <body>
-  <h1>JM Digit Analyzer</h1>
-  <p>My app is working!</p>
+
+<div class="container">
+
+  <div class="header">
+    <h1>JM Digit Analyzer</h1>
+    <p>Live Synthetic Index Research Dashboard</p>
+
+    <div class="status">
+      <div class="dot"></div>
+      <span id="status">Demo mode — waiting for live connection</span>
+    </div>
+  </div>
+
+
+  <div class="card">
+
+    <h2>Market</h2>
+
+    <select id="market">
+      <option>1HZ10V</option>
+      <option>1HZ25V</option>
+      <option>1HZ50V</option>
+      <option>1HZ75V</option>
+      <option>1HZ100V</option>
+    </select>
+
+    <button onclick="startAnalyzer()">Start Analyzer</button>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Latest Tick</h2>
+
+    <div class="tick" id="latestDigit">-</div>
+
+    <div class="tick-label">
+      Latest digit
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Digit Distribution</h2>
+
+    <div class="grid" id="distribution"></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Analysis</h2>
+
+    <div class="analysis-row">
+      <span>Most frequent digit</span>
+      <span class="value" id="highest">-</span>
+    </div>
+
+    <div class="analysis-row">
+      <span>Least frequent digit</span>
+      <span class="value" id="lowest">-</span>
+    </div>
+
+    <div class="analysis-row">
+      <span>Total observations</span>
+      <span class="value" id="total">0</span>
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Signal Engine</h2>
+
+    <div class="signal">
+
+      <div class="signal-title">
+        Current research signal
+      </div>
+
+      <div class="signal-main" id="signal">
+        WAITING
+      </div>
+
+      <div class="confidence" id="confidence">
+        Collecting observations...
+      </div>
+
+      <div class="warning">
+        Research signal only — not a guaranteed prediction.
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer">
+    JM Digit Analyzer • Built by JM
+  </div>
+
+</div>
+
+
+<script>
+
+let digits = [];
+let running = false;
+let timer;
+
+
+/* Create empty distribution */
+
+function createDistribution(){
+
+  const box = document.getElementById("distribution");
+
+  box.innerHTML = "";
+
+  for(let i=0;i<10;i++){
+
+    box.innerHTML += `
+      <div class="digit">
+        <strong id="d${i}">0%</strong>
+        <span>Digit ${i}</span>
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* Update statistics */
+
+function updateAnalysis(){
+
+  if(digits.length === 0) return;
+
+  let counts = Array(10).fill(0);
+
+  digits.forEach(d=>{
+    counts[d]++;
+  });
+
+  let total = digits.length;
+
+  let highest = 0;
+  let lowest = 0;
+
+  for(let i=1;i<10;i++){
+
+    if(counts[i] > counts[highest]){
+      highest = i;
+    }
+
+    if(counts[i] < counts[lowest]){
+      lowest = i;
+    }
+
+  }
+
+
+  for(let i=0;i<10;i++){
+
+    let percentage =
+      ((counts[i]/total)*100).toFixed(1);
+
+    document.getElementById("d"+i).textContent =
+      percentage + "%";
+
+  }
+
+
+  document.getElementById("highest").textContent =
+    highest;
+
+  document.getElementById("lowest").textContent =
+    lowest;
+
+  document.getElementById("total").textContent =
+    total;
+
+
+  /*
+    Basic research signal.
+
+    This does NOT claim to predict
+    the next digit with certainty.
+  */
+
+  let confidence =
+    ((counts[highest]/total)*100).toFixed(1);
+
+  document.getElementById("signal").textContent =
+    "DIGIT " + highest;
+
+  document.getElementById("confidence").textContent =
+    "Historical frequency: " + confidence + "%";
+
+}
+
+
+/* Add a new digit */
+
+function addDigit(digit){
+
+  digits.push(digit);
+
+  /*
+    Keep the most recent
+    100 observations.
+  */
+
+  if(digits.length > 100){
+    digits.shift();
+  }
+
+  document.getElementById("latestDigit").textContent =
+    digit;
+
+  updateAnalysis();
+
+}
+
+
+/* Demo analyzer */
+
+function startAnalyzer(){
+
+  if(running) return;
+
+  running = true;
+
+  document.getElementById("status").textContent =
+    "Demo mode — generating test ticks";
+
+  timer = setInterval(()=>{
+
+    const digit =
+      Math.floor(Math.random()*10);
+
+    addDigit(digit);
+
+  },1000);
+
+}
+
+
+/* Initial screen */
+
+createDistribution();
+
+</script>
+
 </body>
-</html>
+    </html>
