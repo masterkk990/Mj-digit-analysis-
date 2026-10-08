@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>JM Digit Analyzer</title>
-
-<style>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>JM Digit Analyzer</title><style>
 *{
   box-sizing:border-box;
   margin:0;
@@ -110,6 +105,19 @@ button:active{
   color:#91a4bd;
 }
 
+.timer{
+  text-align:center;
+  font-size:30px;
+  font-weight:bold;
+  margin:8px 0;
+}
+
+.timer-label{
+  text-align:center;
+  color:#91a4bd;
+  font-size:12px;
+}
+
 .grid{
   display:grid;
   grid-template-columns:repeat(5,1fr);
@@ -133,6 +141,37 @@ button:active{
 .digit span{
   color:#91a4bd;
   font-size:12px;
+}
+
+.analysis-box{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.metric{
+  background:#07111f;
+  border:1px solid #263955;
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+}
+
+.metric-title{
+  color:#91a4bd;
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.metric-value{
+  font-size:23px;
+  font-weight:bold;
+}
+
+.metric-sub{
+  color:#80d8ff;
+  font-size:12px;
+  margin-top:5px;
 }
 
 .signal{
@@ -164,6 +203,7 @@ button:active{
   color:#ffcc66;
   font-size:12px;
   margin-top:10px;
+  line-height:1.5;
 }
 
 .analysis-row{
@@ -189,6 +229,7 @@ button:active{
 }
 
 @media(max-width:500px){
+
   .grid{
     grid-template-columns:repeat(5,1fr);
   }
@@ -196,270 +237,864 @@ button:active{
   .digit{
     padding:9px 2px;
   }
+
+  .analysis-box{
+    grid-template-columns:1fr 1fr;
+  }
+
 }
-</style>
-</head>
+</style></head><body><div class="container"><div class="header"><h1>JM Digit Analyzer</h1><p>Live Synthetic Index Research Dashboard</p><div class="status">
+<div class="dot" id="statusDot"></div>
+<span id="status">Ready — press Start Analyzer</span>
+</div></div><div class="card"><h2>Market</h2><select id="market"><option value="1HZ10V">1HZ10V</option>
+<option value="1HZ25V">1HZ25V</option>
+<option value="1HZ50V">1HZ50V</option>
+<option value="1HZ75V">1HZ75V</option>
+<option value="1HZ100V">1HZ100V</option></select><button id="startButton" onclick="startAnalyzer()">
+Start Live Analyzer
+</button></div><div class="card"><h2>Latest Tick</h2><div class="tick" id="latestDigit">-</div><div class="tick-label">
+Latest digit
+</div></div><div class="card"><h2>Analysis Timer</h2><div class="timer" id="timer">
+30
+</div><div class="timer-label">
+Seconds until analysis window refresh
+</div></div><div class="card"><h2>Digit Distribution</h2><div class="grid" id="distribution"></div></div><div class="card"><h2>Matches / Differs</h2><div class="analysis-box"><div class="metric"><div class="metric-title">
+MATCHES
+</div><div class="metric-value" id="matchesPercent">
+0%
+</div><div class="metric-sub" id="matchDigit">
+Waiting
+</div></div><div class="metric"><div class="metric-title">
+DIFFERS
+</div><div class="metric-value" id="differsPercent">
+0%
+</div><div class="metric-sub">
+Against selected digit
+</div></div></div></div><div class="card"><h2>Even / Odd</h2><div class="analysis-box"><div class="metric"><div class="metric-title">
+EVEN
+</div><div class="metric-value" id="evenPercent">
+0%
+</div><div class="metric-sub">
+0, 2, 4, 6, 8
+</div></div><div class="metric"><div class="metric-title">
+ODD
+</div><div class="metric-value" id="oddPercent">
+0%
+</div><div class="metric-sub">
+1, 3, 5, 7, 9
+</div></div></div></div><div class="card"><h2>Over / Under</h2><div class="analysis-box"><div class="metric"><div class="metric-title">
+OVER 4
+</div><div class="metric-value" id="overPercent">
+0%
+</div><div class="metric-sub">
+5, 6, 7, 8, 9
+</div></div><div class="metric"><div class="metric-title">
+UNDER 5
+</div><div class="metric-value" id="underPercent">
+0%
+</div><div class="metric-sub">
+0, 1, 2, 3, 4
+</div></div></div></div><div class="card"><h2>Digit Analysis</h2><div class="analysis-row"><span>Most frequent digit</span>
 
-<body>
+<span class="value" id="highest">-</span>
 
-<div class="container">
+</div><div class="analysis-row"><span>Least frequent digit</span>
 
-  <div class="header">
-    <h1>JM Digit Analyzer</h1>
-    <p>Live Synthetic Index Research Dashboard</p>
+<span class="value" id="lowest">-</span>
 
-    <div class="status">
-      <div class="dot"></div>
-      <span id="status">Demo mode — waiting for live connection</span>
-    </div>
-  </div>
+</div><div class="analysis-row"><span>Total observations</span>
 
+<span class="value" id="total">0</span>
 
-  <div class="card">
+</div></div><div class="card"><h2>Signal Engine</h2><div class="signal"><div class="signal-title">
+Current research signal
+</div><div class="signal-main" id="signal">
+WAITING
+</div><div class="confidence" id="confidence">
+Collecting live observations...
+</div><div class="warning">
+This is statistical research from observed ticks.
+It does not guarantee the outcome of the next tick.
+</div></div></div><div class="footer">
+JM Digit Analyzer • Built by JM
+</div></div><script>
 
-    <h2>Market</h2>
-
-    <select id="market">
-      <option>1HZ10V</option>
-      <option>1HZ25V</option>
-      <option>1HZ50V</option>
-      <option>1HZ75V</option>
-      <option>1HZ100V</option>
-    </select>
-
-    <button onclick="startAnalyzer()">Start Analyzer</button>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>Latest Tick</h2>
-
-    <div class="tick" id="latestDigit">-</div>
-
-    <div class="tick-label">
-      Latest digit
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>Digit Distribution</h2>
-
-    <div class="grid" id="distribution"></div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>Analysis</h2>
-
-    <div class="analysis-row">
-      <span>Most frequent digit</span>
-      <span class="value" id="highest">-</span>
-    </div>
-
-    <div class="analysis-row">
-      <span>Least frequent digit</span>
-      <span class="value" id="lowest">-</span>
-    </div>
-
-    <div class="analysis-row">
-      <span>Total observations</span>
-      <span class="value" id="total">0</span>
-    </div>
-
-  </div>
-
-
-  <div class="card">
-
-    <h2>Signal Engine</h2>
-
-    <div class="signal">
-
-      <div class="signal-title">
-        Current research signal
-      </div>
-
-      <div class="signal-main" id="signal">
-        WAITING
-      </div>
-
-      <div class="confidence" id="confidence">
-        Collecting observations...
-      </div>
-
-      <div class="warning">
-        Research signal only — not a guaranteed prediction.
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="footer">
-    JM Digit Analyzer • Built by JM
-  </div>
-
-</div>
-
-
-<script>
+/* =========================
+   JM DIGIT ANALYZER
+   LIVE DERIV ENGINE
+   ========================= */
 
 let digits = [];
+
 let running = false;
-let timer;
+
+let socket = null;
+
+let reconnectTimer = null;
+
+let countdownTimer = null;
+
+let secondsLeft = 30;
 
 
-/* Create empty distribution */
+/* =========================
+   DISTRIBUTION
+   ========================= */
 
 function createDistribution(){
 
-  const box = document.getElementById("distribution");
+const box =
+document.getElementById("distribution");
 
-  box.innerHTML = "";
+box.innerHTML = "";
 
-  for(let i=0;i<10;i++){
+for(let i=0;i<10;i++){
 
-    box.innerHTML += `
-      <div class="digit">
-        <strong id="d${i}">0%</strong>
-        <span>Digit ${i}</span>
-      </div>
-    `;
+box.innerHTML += `
 
-  }
+<div class="digit">
+
+<strong id="d${i}">0%</strong>
+
+<span>Digit ${i}</span>
+
+</div>
+
+`;
+
+}
 
 }
 
 
-/* Update statistics */
+/* =========================
+   STATUS
+   ========================= */
+
+function setStatus(message,color){
+
+document.getElementById("status").textContent =
+message;
+
+document.getElementById("statusDot").style.background =
+color;
+
+}
+
+
+/* =========================
+   PERCENTAGE
+   ========================= */
+
+function percentage(value,total){
+
+if(total === 0){
+
+return "0.0";
+
+}
+
+return ((value / total) * 100).toFixed(1);
+
+}
+
+
+/* =========================
+   UPDATE ALL ANALYSIS
+   ========================= */
 
 function updateAnalysis(){
 
-  if(digits.length === 0) return;
+if(digits.length === 0){
 
-  let counts = Array(10).fill(0);
+return;
 
-  digits.forEach(d=>{
-    counts[d]++;
-  });
+}
 
-  let total = digits.length;
-
-  let highest = 0;
-  let lowest = 0;
-
-  for(let i=1;i<10;i++){
-
-    if(counts[i] > counts[highest]){
-      highest = i;
-    }
-
-    if(counts[i] < counts[lowest]){
-      lowest = i;
-    }
-
-  }
+let counts =
+Array(10).fill(0);
 
 
-  for(let i=0;i<10;i++){
+/* Count digits */
 
-    let percentage =
-      ((counts[i]/total)*100).toFixed(1);
+digits.forEach(d=>{
 
-    document.getElementById("d"+i).textContent =
-      percentage + "%";
+counts[d]++;
 
-  }
+});
 
 
-  document.getElementById("highest").textContent =
-    highest;
-
-  document.getElementById("lowest").textContent =
-    lowest;
-
-  document.getElementById("total").textContent =
-    total;
+let total =
+digits.length;
 
 
-  /*
-    Basic research signal.
+/* Highest / lowest */
 
-    This does NOT claim to predict
-    the next digit with certainty.
-  */
+let highest = 0;
 
-  let confidence =
-    ((counts[highest]/total)*100).toFixed(1);
+let lowest = 0;
 
-  document.getElementById("signal").textContent =
-    "DIGIT " + highest;
+for(let i=1;i<10;i++){
 
-  document.getElementById("confidence").textContent =
-    "Historical frequency: " + confidence + "%";
+if(counts[i] > counts[highest]){
+
+highest = i;
+
+}
+
+if(counts[i] < counts[lowest]){
+
+lowest = i;
+
+}
 
 }
 
 
-/* Add a new digit */
+/* Distribution */
+
+for(let i=0;i<10;i++){
+
+document.getElementById("d"+i).textContent =
+
+percentage(counts[i],total) + "%";
+
+}
+
+
+/* Basic analysis */
+
+document.getElementById("highest").textContent =
+highest;
+
+document.getElementById("lowest").textContent =
+lowest;
+
+document.getElementById("total").textContent =
+total;
+
+
+/* =========================
+   MATCHES / DIFFERS
+   ========================= */
+
+/*
+   The selected match digit is the
+   currently strongest observed digit.
+*/
+
+let matchCount =
+counts[highest];
+
+let matchPercent =
+percentage(matchCount,total);
+
+let differPercent =
+percentage(total-matchCount,total);
+
+document.getElementById("matchesPercent").textContent =
+matchPercent + "%";
+
+document.getElementById("differsPercent").textContent =
+differPercent + "%";
+
+document.getElementById("matchDigit").textContent =
+"Digit " + highest;
+
+
+/* =========================
+   EVEN / ODD
+   ========================= */
+
+let evenCount = 0;
+
+for(let i=0;i<10;i++){
+
+if(i % 2 === 0){
+
+evenCount += counts[i];
+
+}
+
+}
+
+let oddCount =
+total - evenCount;
+
+
+document.getElementById("evenPercent").textContent =
+
+percentage(evenCount,total) + "%";
+
+
+document.getElementById("oddPercent").textContent =
+
+percentage(oddCount,total) + "%";
+
+
+/* =========================
+   OVER / UNDER
+   ========================= */
+
+/*
+   OVER 4 = 5,6,7,8,9
+   UNDER 5 = 0,1,2,3,4
+*/
+
+let overCount = 0;
+
+for(let i=5;i<=9;i++){
+
+overCount += counts[i];
+
+}
+
+let underCount =
+total - overCount;
+
+
+document.getElementById("overPercent").textContent =
+
+percentage(overCount,total) + "%";
+
+
+document.getElementById("underPercent").textContent =
+
+percentage(underCount,total) + "%";
+
+
+/* =========================
+   STRONGEST CATEGORY
+   ========================= */
+
+let categories = [
+
+{
+name:"MATCHES",
+value:Number(matchPercent),
+detail:"Digit " + highest
+},
+
+{
+name:"DIFFERS",
+value:Number(differPercent),
+detail:"Against digit " + highest
+},
+
+{
+name:"EVEN",
+value:Number(
+percentage(evenCount,total)
+),
+detail:"Even digits"
+},
+
+{
+name:"ODD",
+value:Number(
+percentage(oddCount,total)
+),
+detail:"Odd digits"
+},
+
+{
+name:"OVER 4",
+value:Number(
+percentage(overCount,total)
+),
+detail:"Digits 5–9"
+},
+
+{
+name:"UNDER 5",
+value:Number(
+percentage(underCount,total)
+),
+detail:"Digits 0–4"
+}
+
+];
+
+
+/*
+   Sort strongest historical frequency.
+*/
+
+categories.sort((a,b)=>
+b.value-a.value
+);
+
+
+let strongest =
+categories[0];
+
+
+document.getElementById("signal").textContent =
+
+strongest.name;
+
+
+document.getElementById("confidence").textContent =
+
+strongest.value.toFixed(1) +
+"% historical frequency • " +
+strongest.detail;
+
+}
+
+
+/* =========================
+   ADD DIGIT
+   ========================= */
 
 function addDigit(digit){
 
-  digits.push(digit);
+if(
+!Number.isInteger(digit) ||
+digit < 0 ||
+digit > 9
+){
 
-  /*
-    Keep the most recent
-    100 observations.
-  */
-
-  if(digits.length > 100){
-    digits.shift();
-  }
-
-  document.getElementById("latestDigit").textContent =
-    digit;
-
-  updateAnalysis();
+return;
 
 }
 
 
-/* Demo analyzer */
+digits.push(digit);
+
+
+/*
+   Keep last 100 ticks.
+*/
+
+if(digits.length > 100){
+
+digits.shift();
+
+}
+
+
+document.getElementById("latestDigit").textContent =
+digit;
+
+
+updateAnalysis();
+
+}
+
+
+/* =========================
+   EXTRACT LAST DIGIT
+   ========================= */
+
+function extractLastDigit(quote){
+
+const text =
+String(quote);
+
+
+/*
+   Convert the quote to a clean
+   numeric string.
+*/
+
+const clean =
+text.replace(/[^0-9]/g,"");
+
+
+if(!clean){
+
+return null;
+
+}
+
+
+return Number(
+clean.charAt(clean.length-1)
+);
+
+}
+
+
+/* =========================
+   DERIV CONNECTION
+   ========================= */
+
+function connectDeriv(){
+
+const market =
+document.getElementById("market").value;
+
+
+const wsURL =
+"wss://ws.binaryws.com/websockets/v3";
+
+
+setStatus(
+"Connecting to Deriv...",
+"#ffcc66"
+);
+
+
+try{
+
+socket =
+new WebSocket(wsURL);
+
+}
+
+catch(error){
+
+setStatus(
+"WebSocket could not start",
+"#ff5555"
+);
+
+return;
+
+}
+
+
+/* =========================
+   OPEN
+   ========================= */
+
+socket.onopen = function(){
+
+setStatus(
+"Connected — waiting for live ticks",
+"#44dd88"
+);
+
+
+socket.send(
+
+JSON.stringify({
+
+ticks:market,
+
+subscribe:1,
+
+req_id:1
+
+})
+
+);
+
+};
+
+
+/* =========================
+   MESSAGE
+   ========================= */
+
+socket.onmessage = function(event){
+
+try{
+
+const data =
+JSON.parse(event.data);
+
+
+/*
+   Live tick.
+*/
+
+if(
+data.msg_type === "tick" &&
+data.tick
+){
+
+const quote =
+data.tick.quote;
+
+
+const digit =
+extractLastDigit(quote);
+
+
+if(digit !== null){
+
+addDigit(digit);
+
+
+setStatus(
+"LIVE • " +
+market +
+" • Tick received",
+"#44dd88"
+);
+
+}
+
+}
+
+
+/*
+   API error.
+*/
+
+if(data.error){
+
+console.error(
+"Deriv API error:",
+data.error
+);
+
+
+setStatus(
+"Deriv error: " +
+data.error.message,
+"#ff5555"
+);
+
+}
+
+}
+
+catch(error){
+
+console.error(
+"Tick processing error:",
+error
+);
+
+}
+
+};
+
+
+/* =========================
+   ERROR
+   ========================= */
+
+socket.onerror = function(error){
+
+console.error(
+"WebSocket error:",
+error
+);
+
+
+setStatus(
+"Connection error",
+"#ff5555"
+);
+
+};
+
+
+/* =========================
+   CLOSE
+   ========================= */
+
+socket.onclose = function(){
+
+socket = null;
+
+
+if(running){
+
+setStatus(
+"Disconnected — reconnecting...",
+"#ffcc66"
+);
+
+
+reconnectTimer =
+setTimeout(
+connectDeriv,
+3000
+);
+
+}
+
+else{
+
+setStatus(
+"Disconnected",
+"#ff5555"
+);
+
+}
+
+};
+
+}
+
+
+/* =========================
+   ANALYSIS TIMER
+   ========================= */
+
+function resetAnalysisWindow(){
+
+/*
+   Start a fresh statistical
+   analysis window.
+
+   The connection stays alive.
+*/
+
+digits = [];
+
+document.getElementById("latestDigit").textContent =
+"-";
+
+document.getElementById("highest").textContent =
+"-";
+
+document.getElementById("lowest").textContent =
+"-";
+
+document.getElementById("total").textContent =
+"0";
+
+
+document.getElementById("signal").textContent =
+"COLLECTING";
+
+
+document.getElementById("confidence").textContent =
+"New live analysis window";
+
+
+secondsLeft = 30;
+
+}
+
+
+/* =========================
+   COUNTDOWN
+   ========================= */
+
+function startTimer(){
+
+clearInterval(countdownTimer);
+
+secondsLeft = 30;
+
+document.getElementById("timer").textContent =
+secondsLeft;
+
+
+countdownTimer =
+setInterval(function(){
+
+secondsLeft--;
+
+document.getElementById("timer").textContent =
+secondsLeft;
+
+
+if(secondsLeft <= 0){
+
+resetAnalysisWindow();
+
+}
+
+},1000);
+
+}
+
+
+/* =========================
+   START ANALYZER
+   ========================= */
 
 function startAnalyzer(){
 
-  if(running) return;
+if(running){
 
-  running = true;
-
-  document.getElementById("status").textContent =
-    "Demo mode — generating test ticks";
-
-  timer = setInterval(()=>{
-
-    const digit =
-      Math.floor(Math.random()*10);
-
-    addDigit(digit);
-
-  },1000);
+return;
 
 }
 
 
-/* Initial screen */
+running = true;
+
+
+/*
+   Clear previous session.
+*/
+
+digits = [];
+
+
+document.getElementById("latestDigit").textContent =
+"-";
+
+document.getElementById("highest").textContent =
+"-";
+
+document.getElementById("lowest").textContent =
+"-";
+
+document.getElementById("total").textContent =
+"0";
+
+document.getElementById("signal").textContent =
+"WAITING";
+
+document.getElementById("confidence").textContent =
+"Collecting live observations...";
+
+
+document.getElementById("startButton").textContent =
+"LIVE ANALYZER RUNNING";
+
+
+startTimer();
+
+connectDeriv();
+
+}
+
+
+/* =========================
+   MARKET CHANGE
+   ========================= */
+
+document.getElementById("market")
+.addEventListener(
+"change",
+function(){
+
+if(!running){
+
+return;
+
+}
+
+
+digits = [];
+
+
+if(socket){
+
+setStatus(
+"Changing market...",
+"#ffcc66"
+);
+
+socket.close();
+
+}
+
+else{
+
+connectDeriv();
+
+}
+
+});
+
+
+/* =========================
+   INITIALIZE
+   ========================= */
 
 createDistribution();
 
-</script>
-
-</body>
-    </html>
+</script></body>
+</html>
