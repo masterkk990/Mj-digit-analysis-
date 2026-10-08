@@ -1,1101 +1,392 @@
-<!DOCTYPE html><html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>JM Digit Analyzer</title><style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,sans-serif;
-  background:#07111f;
-  color:#fff;
-  padding:15px;
-}
-
-.container{
-  max-width:900px;
-  margin:auto;
-}
-
-.header{
-  background:#101d31;
-  border:1px solid #263955;
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:15px;
-}
-
-.header h1{
-  font-size:25px;
-  margin-bottom:7px;
-}
-
-.header p{
-  color:#91a4bd;
-  font-size:14px;
-}
-
-.status{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:14px;
-  color:#ffcc66;
-  font-size:14px;
-}
-
-.dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#ffcc66;
-}
-
-.card{
-  background:#101d31;
-  border:1px solid #263955;
-  border-radius:18px;
-  padding:18px;
-  margin-bottom:15px;
-}
-
-.card h2{
-  font-size:17px;
-  margin-bottom:15px;
-}
-
-select,button{
-  width:100%;
-  padding:13px;
-  border-radius:10px;
-  border:1px solid #334967;
-  font-size:15px;
-}
-
-select{
-  background:#07111f;
-  color:white;
-  margin-bottom:10px;
-}
-
-button{
-  background:#1769e0;
-  color:white;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.98);
-}
-
-.tick{
-  text-align:center;
-  font-size:48px;
-  font-weight:bold;
-  margin:10px 0;
-}
-
-.tick-label{
-  text-align:center;
-  color:#91a4bd;
-}
-
-.timer{
-  text-align:center;
-  font-size:30px;
-  font-weight:bold;
-  margin:8px 0;
-}
-
-.timer-label{
-  text-align:center;
-  color:#91a4bd;
-  font-size:12px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:8px;
-}
-
-.digit{
-  background:#07111f;
-  border:1px solid #263955;
-  border-radius:10px;
-  padding:12px 5px;
-  text-align:center;
-}
-
-.digit strong{
-  display:block;
-  font-size:20px;
-  margin-bottom:5px;
-}
-
-.digit span{
-  color:#91a4bd;
-  font-size:12px;
-}
-
-.analysis-box{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.metric{
-  background:#07111f;
-  border:1px solid #263955;
-  border-radius:12px;
-  padding:14px;
-  text-align:center;
-}
-
-.metric-title{
-  color:#91a4bd;
-  font-size:12px;
-  margin-bottom:7px;
-}
-
-.metric-value{
-  font-size:23px;
-  font-weight:bold;
-}
-
-.metric-sub{
-  color:#80d8ff;
-  font-size:12px;
-  margin-top:5px;
-}
-
-.signal{
-  text-align:center;
-  padding:20px;
-  border-radius:14px;
-  background:#07111f;
-  border:1px solid #263955;
-}
-
-.signal-title{
-  color:#91a4bd;
-  font-size:13px;
-  margin-bottom:8px;
-}
-
-.signal-main{
-  font-size:27px;
-  font-weight:bold;
-  margin-bottom:8px;
-}
-
-.confidence{
-  font-size:15px;
-  color:#80d8ff;
-}
-
-.warning{
-  color:#ffcc66;
-  font-size:12px;
-  margin-top:10px;
-  line-height:1.5;
-}
-
-.analysis-row{
-  display:flex;
-  justify-content:space-between;
-  padding:12px 0;
-  border-bottom:1px solid #203149;
-}
-
-.analysis-row:last-child{
-  border-bottom:none;
-}
-
-.value{
-  font-weight:bold;
-}
-
-.footer{
-  text-align:center;
-  color:#60738d;
-  font-size:12px;
-  padding:15px;
-}
-
-@media(max-width:500px){
-
-  .grid{
-    grid-template-columns:repeat(5,1fr);
-  }
-
-  .digit{
-    padding:9px 2px;
-  }
-
-  .analysis-box{
-    grid-template-columns:1fr 1fr;
-  }
-
-}
-</style></head><body><div class="container"><div class="header"><h1>JM Digit Analyzer</h1><p>Live Synthetic Index Research Dashboard</p><div class="status">
-<div class="dot" id="statusDot"></div>
-<span id="status">Ready — press Start Analyzer</span>
-</div></div><div class="card"><h2>Market</h2><select id="market"><option value="1HZ10V">1HZ10V</option>
-<option value="1HZ25V">1HZ25V</option>
-<option value="1HZ50V">1HZ50V</option>
-<option value="1HZ75V">1HZ75V</option>
-<option value="1HZ100V">1HZ100V</option></select><button id="startButton" onclick="startAnalyzer()">
-Start Live Analyzer
-</button></div><div class="card"><h2>Latest Tick</h2><div class="tick" id="latestDigit">-</div><div class="tick-label">
-Latest digit
-</div></div><div class="card"><h2>Analysis Timer</h2><div class="timer" id="timer">
-30
-</div><div class="timer-label">
-Seconds until analysis window refresh
-</div></div><div class="card"><h2>Digit Distribution</h2><div class="grid" id="distribution"></div></div><div class="card"><h2>Matches / Differs</h2><div class="analysis-box"><div class="metric"><div class="metric-title">
-MATCHES
-</div><div class="metric-value" id="matchesPercent">
-0%
-</div><div class="metric-sub" id="matchDigit">
-Waiting
-</div></div><div class="metric"><div class="metric-title">
-DIFFERS
-</div><div class="metric-value" id="differsPercent">
-0%
-</div><div class="metric-sub">
-Against selected digit
-</div></div></div></div><div class="card"><h2>Even / Odd</h2><div class="analysis-box"><div class="metric"><div class="metric-title">
-EVEN
-</div><div class="metric-value" id="evenPercent">
-0%
-</div><div class="metric-sub">
-0, 2, 4, 6, 8
-</div></div><div class="metric"><div class="metric-title">
-ODD
-</div><div class="metric-value" id="oddPercent">
-0%
-</div><div class="metric-sub">
-1, 3, 5, 7, 9
-</div></div></div></div><div class="card"><h2>Over / Under</h2><div class="analysis-box"><div class="metric"><div class="metric-title">
-OVER 4
-</div><div class="metric-value" id="overPercent">
-0%
-</div><div class="metric-sub">
-5, 6, 7, 8, 9
-</div></div><div class="metric"><div class="metric-title">
-UNDER 5
-</div><div class="metric-value" id="underPercent">
-0%
-</div><div class="metric-sub">
-0, 1, 2, 3, 4
-</div></div></div></div><div class="card"><h2>Digit Analysis</h2><div class="analysis-row"><span>Most frequent digit</span>
-
-<span class="value" id="highest">-</span>
-
-</div><div class="analysis-row"><span>Least frequent digit</span>
-
-<span class="value" id="lowest">-</span>
-
-</div><div class="analysis-row"><span>Total observations</span>
-
-<span class="value" id="total">0</span>
-
-</div></div><div class="card"><h2>Signal Engine</h2><div class="signal"><div class="signal-title">
-Current research signal
-</div><div class="signal-main" id="signal">
-WAITING
-</div><div class="confidence" id="confidence">
-Collecting live observations...
-</div><div class="warning">
-This is statistical research from observed ticks.
-It does not guarantee the outcome of the next tick.
-</div></div></div><div class="footer">
-JM Digit Analyzer • Built by JM
-</div></div><script>
-
-/* =========================
-   JM DIGIT ANALYZER
-   LIVE DERIV ENGINE
-   ========================= */
-
-let digits = [];
-
-let running = false;
-
-let socket = null;
-
-let reconnectTimer = null;
-
-let countdownTimer = null;
-
-let secondsLeft = 30;
-
-
-/* =========================
-   DISTRIBUTION
-   ========================= */
-
-function createDistribution(){
-
-const box =
-document.getElementById("distribution");
-
-box.innerHTML = "";
-
-for(let i=0;i<10;i++){
-
-box.innerHTML += `
-
-<div class="digit">
-
-<strong id="d${i}">0%</strong>
-
-<span>Digit ${i}</span>
-
-</div>
-
-`;
-
-}
-
-}
-
-
-/* =========================
-   STATUS
-   ========================= */
-
-function setStatus(message,color){
-
-document.getElementById("status").textContent =
-message;
-
-document.getElementById("statusDot").style.background =
-color;
-
-}
-
-
-/* =========================
-   PERCENTAGE
-   ========================= */
-
-function percentage(value,total){
-
-if(total === 0){
-
-return "0.0";
-
-}
-
-return ((value / total) * 100).toFixed(1);
-
-}
-
-
-/* =========================
-   UPDATE ALL ANALYSIS
-   ========================= */
-
-function updateAnalysis(){
-
-if(digits.length === 0){
-
-return;
-
-}
-
-let counts =
-Array(10).fill(0);
-
-
-/* Count digits */
-
-digits.forEach(d=>{
-
-counts[d]++;
-
-});
-
-
-let total =
-digits.length;
-
-
-/* Highest / lowest */
-
-let highest = 0;
-
-let lowest = 0;
-
-for(let i=1;i<10;i++){
-
-if(counts[i] > counts[highest]){
-
-highest = i;
-
-}
-
-if(counts[i] < counts[lowest]){
-
-lowest = i;
-
-}
-
-}
-
-
-/* Distribution */
-
-for(let i=0;i<10;i++){
-
-document.getElementById("d"+i).textContent =
-
-percentage(counts[i],total) + "%";
-
-}
-
-
-/* Basic analysis */
-
-document.getElementById("highest").textContent =
-highest;
-
-document.getElementById("lowest").textContent =
-lowest;
-
-document.getElementById("total").textContent =
-total;
-
-
-/* =========================
-   MATCHES / DIFFERS
-   ========================= */
-
-/*
-   The selected match digit is the
-   currently strongest observed digit.
-*/
-
-let matchCount =
-counts[highest];
-
-let matchPercent =
-percentage(matchCount,total);
-
-let differPercent =
-percentage(total-matchCount,total);
-
-document.getElementById("matchesPercent").textContent =
-matchPercent + "%";
-
-document.getElementById("differsPercent").textContent =
-differPercent + "%";
-
-document.getElementById("matchDigit").textContent =
-"Digit " + highest;
-
-
-/* =========================
-   EVEN / ODD
-   ========================= */
-
-let evenCount = 0;
-
-for(let i=0;i<10;i++){
-
-if(i % 2 === 0){
-
-evenCount += counts[i];
-
-}
-
-}
-
-let oddCount =
-total - evenCount;
-
-
-document.getElementById("evenPercent").textContent =
-
-percentage(evenCount,total) + "%";
-
-
-document.getElementById("oddPercent").textContent =
-
-percentage(oddCount,total) + "%";
-
-
-/* =========================
-   OVER / UNDER
-   ========================= */
-
-/*
-   OVER 4 = 5,6,7,8,9
-   UNDER 5 = 0,1,2,3,4
-*/
-
-let overCount = 0;
-
-for(let i=5;i<=9;i++){
-
-overCount += counts[i];
-
-}
-
-let underCount =
-total - overCount;
-
-
-document.getElementById("overPercent").textContent =
-
-percentage(overCount,total) + "%";
-
-
-document.getElementById("underPercent").textContent =
-
-percentage(underCount,total) + "%";
-
-
-/* =========================
-   STRONGEST CATEGORY
-   ========================= */
-
-let categories = [
-
-{
-name:"MATCHES",
-value:Number(matchPercent),
-detail:"Digit " + highest
-},
-
-{
-name:"DIFFERS",
-value:Number(differPercent),
-detail:"Against digit " + highest
-},
-
-{
-name:"EVEN",
-value:Number(
-percentage(evenCount,total)
-),
-detail:"Even digits"
-},
-
-{
-name:"ODD",
-value:Number(
-percentage(oddCount,total)
-),
-detail:"Odd digits"
-},
-
-{
-name:"OVER 4",
-value:Number(
-percentage(overCount,total)
-),
-detail:"Digits 5–9"
-},
-
-{
-name:"UNDER 5",
-value:Number(
-percentage(underCount,total)
-),
-detail:"Digits 0–4"
-}
-
-];
-
-
-/*
-   Sort strongest historical frequency.
-*/
-
-categories.sort((a,b)=>
-b.value-a.value
-);
-
-
-let strongest =
-categories[0];
-
-
-document.getElementById("signal").textContent =
-
-strongest.name;
-
-
-document.getElementById("confidence").textContent =
-
-strongest.value.toFixed(1) +
-"% historical frequency • " +
-strongest.detail;
-
-}
-
-
-/* =========================
-   ADD DIGIT
-   ========================= */
-
-function addDigit(digit){
-
-if(
-!Number.isInteger(digit) ||
-digit < 0 ||
-digit > 9
-){
-
-return;
-
-}
-
-
-digits.push(digit);
-
-
-/*
-   Keep last 100 ticks.
-*/
-
-if(digits.length > 100){
-
-digits.shift();
-
-}
-
-
-document.getElementById("latestDigit").textContent =
-digit;
-
-
-updateAnalysis();
-
-}
-
-
-/* =========================
-   EXTRACT LAST DIGIT
-   ========================= */
-
-function extractLastDigit(quote){
-
-const text =
-String(quote);
-
-
-/*
-   Convert the quote to a clean
-   numeric string.
-*/
-
-const clean =
-text.replace(/[^0-9]/g,"");
-
-
-if(!clean){
-
-return null;
-
-}
-
-
-return Number(
-clean.charAt(clean.length-1)
-);
-
-}
-
-
-/* =========================
-   DERIV CONNECTION
-   ========================= */
-
 function connectDeriv(){
 
 const market =
 document.getElementById("market").value;
 
-
 const wsURL =
-const wsURL =
-  "wss://api.derivws.com/trading/v1/options/ws/public";
-
+"wss://ws.binaryws.com/websockets/v3";
 
 setStatus(
-"Connecting to Deriv...",
+"STEP 1/5 — Opening Deriv WebSocket...",
 "#ffcc66"
 );
 
+console.log("JM DIAGNOSTIC: Starting connection");
+console.log("Endpoint:", wsURL);
+console.log("Market:", market);
 
 try{
 
-socket =
-new WebSocket(wsURL);
+socket = new WebSocket(wsURL);
 
-}
+}catch(error){
 
-catch(error){
+console.error(
+  "STEP 1 FAILED:",
+  error
+);
 
 setStatus(
-"WebSocket could not start",
-"#ff5555"
+  "STEP 1 FAILED — Browser rejected WebSocket",
+  "#ff5555"
 );
 
 return;
 
 }
 
-
 /* =========================
-   OPEN
-   ========================= */
+CONNECTION OPENED
+========================= */
 
 socket.onopen = function(){
 
+console.log(
+  "STEP 1 SUCCESS — WebSocket OPEN"
+);
+
 setStatus(
-"Connected — waiting for live ticks",
-"#44dd88"
+  "STEP 2/5 — WebSocket connected",
+  "#44dd88"
 );
 
 
+/*
+  Request server time.
+  This is a simple connectivity
+  confirmation.
+*/
+
 socket.send(
+  JSON.stringify({
 
-JSON.stringify({
+    time: 1,
 
-ticks:market,
+    req_id: 100
 
-subscribe:1,
+  })
+);
 
-req_id:1
 
-})
+/*
+  Ask Deriv which symbols are
+  available.
+*/
 
+socket.send(
+  JSON.stringify({
+
+    active_symbols: "brief",
+
+    product_type: "basic",
+
+    req_id: 101
+
+  })
+);
+
+
+/*
+  Subscribe to the selected
+  live market.
+*/
+
+socket.send(
+  JSON.stringify({
+
+    ticks: market,
+
+    subscribe: 1,
+
+    req_id: 102
+
+  })
+);
+
+
+/*
+  Request recent tick history.
+  This also proves the symbol
+  is available.
+*/
+
+socket.send(
+  JSON.stringify({
+
+    ticks_history: market,
+
+    count: 20,
+
+    end: "latest",
+
+    style: "ticks",
+
+    req_id: 103
+
+  })
 );
 
 };
 
-
 /* =========================
-   MESSAGE
-   ========================= */
+MESSAGES
+========================= */
 
 socket.onmessage = function(event){
 
 try{
 
-const data =
-JSON.parse(event.data);
+  const data =
+    JSON.parse(event.data);
+
+  console.log(
+    "DERIV RESPONSE:",
+    data
+  );
 
 
-/*
-   Live tick.
-*/
+  /* SERVER TIME */
 
-if(
-data.msg_type === "tick" &&
-data.tick
-){
+  if(
+    data.req_id === 100 &&
+    data.msg_type === "time"
+  ){
 
-const quote =
-data.tick.quote;
+    setStatus(
+      "STEP 3/5 — Deriv server responding",
+      "#44dd88"
+    );
 
+    console.log(
+      "STEP 3 SUCCESS — Server time:",
+      data.time
+    );
 
-const digit =
-extractLastDigit(quote);
-
-
-if(digit !== null){
-
-addDigit(digit);
+  }
 
 
-setStatus(
-"LIVE • " +
-market +
-" • Tick received",
-"#44dd88"
-);
+  /* ACTIVE SYMBOLS */
 
-}
+  if(
+    data.req_id === 101 &&
+    data.msg_type === "active_symbols"
+  ){
 
-}
-
-
-/*
-   API error.
-*/
-
-if(data.error){
-
-console.error(
-"Deriv API error:",
-data.error
-);
+    const found =
+      data.active_symbols.some(
+        symbol =>
+          symbol.symbol === market
+      );
 
 
-setStatus(
-"Deriv error: " +
-data.error.message,
-"#ff5555"
-);
+    if(found){
 
-}
+      console.log(
+        "STEP 4 SUCCESS — Market exists:",
+        market
+      );
 
-}
+      setStatus(
+        "STEP 4/5 — Market confirmed: " +
+        market,
+        "#44dd88"
+      );
 
-catch(error){
+    }else{
 
-console.error(
-"Tick processing error:",
-error
-);
+      console.error(
+        "MARKET NOT FOUND:",
+        market
+      );
+
+      setStatus(
+        "Market not found: " +
+        market,
+        "#ff5555"
+      );
+
+    }
+
+  }
+
+
+  /* TICK HISTORY */
+
+  if(
+    data.req_id === 103 &&
+    data.msg_type === "history"
+  ){
+
+    console.log(
+      "HISTORY RECEIVED:",
+      data
+    );
+
+    setStatus(
+      "STEP 4/5 — History received; waiting for live tick",
+      "#44dd88"
+    );
+
+  }
+
+
+  /* LIVE TICK */
+
+  if(
+    data.msg_type === "tick" &&
+    data.tick
+  ){
+
+    const quote =
+      data.tick.quote;
+
+    const symbol =
+      data.tick.symbol;
+
+    const epoch =
+      data.tick.epoch;
+
+
+    console.log(
+      "STEP 5 SUCCESS — LIVE TICK",
+      {
+        symbol:symbol,
+        quote:quote,
+        epoch:epoch
+      }
+    );
+
+
+    const digit =
+      extractLastDigit(quote);
+
+
+    if(digit !== null){
+
+      addDigit(digit);
+
+      setStatus(
+        "LIVE — " +
+        symbol +
+        " • Digit " +
+        digit,
+        "#44dd88"
+      );
+
+    }else{
+
+      setStatus(
+        "Tick received but digit extraction failed",
+        "#ff5555"
+      );
+
+    }
+
+  }
+
+
+  /* DERIV ERROR */
+
+  if(data.error){
+
+    console.error(
+      "DERIV API ERROR:",
+      data.error
+    );
+
+
+    setStatus(
+      "DERIV ERROR: " +
+      (
+        data.error.message ||
+        data.error.code ||
+        "Unknown error"
+      ),
+      "#ff5555"
+    );
+
+  }
+
+}catch(error){
+
+  console.error(
+    "MESSAGE PROCESSING ERROR:",
+    error
+  );
+
+  setStatus(
+    "Message processing error",
+    "#ff5555"
+  );
 
 }
 
 };
 
-
 /* =========================
-   ERROR
-   ========================= */
+WEBSOCKET ERROR
+========================= */
 
 socket.onerror = function(error){
 
 console.error(
-"WebSocket error:",
-error
+  "WEBSOCKET ERROR:",
+  error
 );
 
 
 setStatus(
-"Connection error",
-"#ff5555"
+  "WEBSOCKET ERROR — check console",
+  "#ff5555"
 );
 
 };
 
-
 /* =========================
-   CLOSE
-   ========================= */
+WEBSOCKET CLOSED
+========================= */
 
-socket.onclose = function(){
+socket.onclose = function(event){
 
 socket = null;
 
 
+console.error(
+  "WEBSOCKET CLOSED",
+  {
+    code:event.code,
+    reason:event.reason,
+    wasClean:event.wasClean
+  }
+);
+
+
 if(running){
 
-setStatus(
-"Disconnected — reconnecting...",
-"#ffcc66"
-);
+  setStatus(
+    "CLOSED — code " +
+    event.code +
+    " — reconnecting...",
+    "#ffcc66"
+  );
 
 
-reconnectTimer =
-setTimeout(
-connectDeriv,
-3000
-);
+  reconnectTimer =
+    setTimeout(
+      connectDeriv,
+      5000
+    );
 
-}
+}else{
 
-else{
-
-setStatus(
-"Disconnected",
-"#ff5555"
-);
+  setStatus(
+    "Disconnected — code " +
+    event.code,
+    "#ff5555"
+  );
 
 }
 
 };
 
 }
-
-
-/* =========================
-   ANALYSIS TIMER
-   ========================= */
-
-function resetAnalysisWindow(){
-
-/*
-   Start a fresh statistical
-   analysis window.
-
-   The connection stays alive.
-*/
-
-digits = [];
-
-document.getElementById("latestDigit").textContent =
-"-";
-
-document.getElementById("highest").textContent =
-"-";
-
-document.getElementById("lowest").textContent =
-"-";
-
-document.getElementById("total").textContent =
-"0";
-
-
-document.getElementById("signal").textContent =
-"COLLECTING";
-
-
-document.getElementById("confidence").textContent =
-"New live analysis window";
-
-
-secondsLeft = 30;
-
-}
-
-
-/* =========================
-   COUNTDOWN
-   ========================= */
-
-function startTimer(){
-
-clearInterval(countdownTimer);
-
-secondsLeft = 30;
-
-document.getElementById("timer").textContent =
-secondsLeft;
-
-
-countdownTimer =
-setInterval(function(){
-
-secondsLeft--;
-
-document.getElementById("timer").textContent =
-secondsLeft;
-
-
-if(secondsLeft <= 0){
-
-resetAnalysisWindow();
-
-}
-
-},1000);
-
-}
-
-
-/* =========================
-   START ANALYZER
-   ========================= */
-
-function startAnalyzer(){
-
-if(running){
-
-return;
-
-}
-
-
-running = true;
-
-
-/*
-   Clear previous session.
-*/
-
-digits = [];
-
-
-document.getElementById("latestDigit").textContent =
-"-";
-
-document.getElementById("highest").textContent =
-"-";
-
-document.getElementById("lowest").textContent =
-"-";
-
-document.getElementById("total").textContent =
-"0";
-
-document.getElementById("signal").textContent =
-"WAITING";
-
-document.getElementById("confidence").textContent =
-"Collecting live observations...";
-
-
-document.getElementById("startButton").textContent =
-"LIVE ANALYZER RUNNING";
-
-
-startTimer();
-
-connectDeriv();
-
-}
-
-
-/* =========================
-   MARKET CHANGE
-   ========================= */
-
-document.getElementById("market")
-.addEventListener(
-"change",
-function(){
-
-if(!running){
-
-return;
-
-}
-
-
-digits = [];
-
-
-if(socket){
-
-setStatus(
-"Changing market...",
-"#ffcc66"
-);
-
-socket.close();
-
-}
-
-else{
-
-connectDeriv();
-
-}
-
-});
-
-
-/* =========================
-   INITIALIZE
-   ========================= */
-
-createDistribution();
-
-</script></body>
-</html>
