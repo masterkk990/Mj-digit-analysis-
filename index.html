@@ -1,19 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>JM Digit Analyzer — Live</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#07111f;
+  color:#eef5ff;
+  font-family:Arial,sans-serif;
+}
+
+header{
+  padding:20px;
+  background:#0b1728;
+  border-bottom:1px solid #20334e;
+}
+
+h1{
+  margin:0;
+  font-size:24px;
+}
+
+.subtitle{
+  margin-top:6px;
+  color:#91a4bd;
+  font-size:14px;
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:15px;
+}
+
+.card{
+  background:#0e1b2d;
+  border:1px solid #213653;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:15px;
+}
+
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+select,
+button{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #2b4261;
+  background:#12233a;
+  color:white;
+  font-size:16px;
+}
+
+button{
+  background:#1976d2;
+  border:none;
+  font-weight:bold;
+}
+
+button.stop{
+  background:#b83232;
+}
+
+.status{
+  margin-top:12px;
+  padding:13px;
+  border-radius:10px;
+  background:#263349;
+  font-weight:bold;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.box{
+  background:#101f34;
+  border:1px solid #253b59;
+  border-radius:12px;
+  padding:14px;
+}
+
+.box h3{
+  margin:0 0 10px;
+  font-size:15px;
+  color:#9fb2ca;
+}
+
+.big{
+  font-size:32px;
+  font-weight:bold;
+}
+
+.tick-digit{
+  font-size:60px;
+  font-weight:bold;
+}
+
+.bar{
+  margin:8px 0;
+}
+
+.bar-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  color:#b4c3d5;
+}
+
+.track{
+  height:9px;
+  background:#1c2b40;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:4px;
+}
+
+.fill{
+  height:100%;
+  background:#3189e8;
+  width:0%;
+}
+
+.signal{
+  font-size:25px;
+  font-weight:bold;
+  padding:15px;
+  border-radius:10px;
+  background:#142842;
+}
+
+.confidence{
+  font-size:16px;
+  color:#a9bbd0;
+  margin-top:7px;
+}
+
+.timer{
+  font-size:30px;
+  font-weight:bold;
+}
+
+.log{
+  height:220px;
+  overflow:auto;
+  background:#050b13;
+  padding:12px;
+  border-radius:10px;
+  font-family:monospace;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.log-line{
+  margin-bottom:4px;
+}
+
+.good{
+  color:#55e88d;
+}
+
+.warn{
+  color:#ffd166;
+}
+
+.bad{
+  color:#ff6868;
+}
+
+.info{
+  color:#72b8ff;
+}
+
+.note{
+  color:#8498b2;
+  font-size:13px;
+  line-height:1.5;
+}
+
+@media(max-width:650px){
+
+  .controls,
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>JM Digit Analyzer</h1>
+
+  <div class="subtitle">
+    Live Deriv Synthetic Index Analysis
+  </div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =========================
+     CONNECTION
+========================= -->
+
+<div class="card">
+
+  <div class="controls">
+
+    <select id="market">
+
+      <option value="1HZ10V">
+        1HZ10V
+      </option>
+
+      <option value="1HZ25V">
+        1HZ25V
+      </option>
+
+      <option value="1HZ50V">
+        1HZ50V
+      </option>
+
+      <option value="1HZ75V">
+        1HZ75V
+      </option>
+
+      <option value="1HZ100V" selected>
+        1HZ100V
+      </option>
+
+    </select>
+
+    <button id="startButton"
+            onclick="startAnalyzer()">
+
+      START LIVE ANALYZER
+
+    </button>
+
+  </div>
+
+
+  <div id="status"
+       class="status">
+
+    OFFLINE — READY
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     LIVE TICK
+========================= -->
+
+<div class="card">
+
+  <div class="grid">
+
+    <div class="box">
+
+      <h3>LATEST QUOTE</h3>
+
+      <div id="latestQuote"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+
+    <div class="box">
+
+      <h3>LAST DIGIT</h3>
+
+      <div id="latestDigit"
+           class="tick-digit">
+
+        —
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     TIMER
+========================= -->
+
+<div class="card">
+
+  <h3>ANALYSIS WINDOW</h3>
+
+  <div id="timer"
+       class="timer">
+
+    30s
+
+  </div>
+
+  <div class="note">
+
+    The statistical window refreshes automatically.
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     STATISTICS
+========================= -->
+
+<div class="card">
+
+  <h2>Digit Distribution</h2>
+
+  <div id="distribution"></div>
+
+</div>
+
+
+<!-- =========================
+     MATCHES / DIFFERS
+========================= -->
+
+<div class="card">
+
+  <h2>Matches / Differs</h2>
+
+  <div class="grid">
+
+    <div class="box">
+
+      <h3>MATCHES</h3>
+
+      <div id="matches"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+    <div class="box">
+
+      <h3>DIFFERS</h3>
+
+      <div id="differs"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     EVEN / ODD
+========================= -->
+
+<div class="card">
+
+  <h2>Even / Odd</h2>
+
+  <div class="grid">
+
+    <div class="box">
+
+      <h3>EVEN</h3>
+
+      <div id="even"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+    <div class="box">
+
+      <h3>ODD</h3>
+
+      <div id="odd"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     OVER / UNDER
+========================= -->
+
+<div class="card">
+
+  <h2>Over / Under</h2>
+
+  <div class="grid">
+
+    <div class="box">
+
+      <h3>OVER 4</h3>
+
+      <div id="over"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+    <div class="box">
+
+      <h3>UNDER 5</h3>
+
+      <div id="under"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     SIGNAL
+========================= -->
+
+<div class="card">
+
+  <h2>Signal Engine</h2>
+
+  <div id="signal"
+       class="signal">
+
+    WAITING FOR DATA
+
+  </div>
+
+  <div id="confidence"
+       class="confidence">
+
+    No signal yet.
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     ANALYSIS
+========================= -->
+
+<div class="card">
+
+  <h2>Digit Analysis</h2>
+
+  <div class="grid">
+
+    <div class="box">
+
+      <h3>MOST FREQUENT</h3>
+
+      <div id="mostFrequent"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+    <div class="box">
+
+      <h3>LEAST FREQUENT</h3>
+
+      <div id="leastFrequent"
+           class="big">
+
+        —
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <p>
+
+    Observations:
+    <b id="observations">0</b>
+
+  </p>
+
+</div>
+
+
+<!-- =========================
+     DIAGNOSTICS
+========================= -->
+
+<div class="card">
+
+  <h2>Connection Diagnostics</h2>
+
+  <div class="log"
+       id="log"></div>
+
+</div>
+
+
+<div class="card">
+
+  <div class="note">
+
+    JM Digit Analyzer is a statistical research tool.
+    Signals are based on observed tick data and do not
+    guarantee the outcome of a trade.
+
+  </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   JM DIGIT ANALYZER
+   LIVE DERIV ENGINE
+===================================================== */
+
+
+/* =========================
+   GLOBAL STATE
+========================= */
+
+let socket = null;
+
+let running = false;
+
+let reconnectTimer = null;
+
+let connectionTimeout = null;
+
+let timerInterval = null;
+
+let secondsLeft = 30;
+
+let digits = [];
+
+let tickCount = 0;
+
+let firstTickReceived = false;
+
+
+/* =========================
+   DOM
+========================= */
+
+const statusEl =
+  document.getElementById("status");
+
+const logEl =
+  document.getElementById("log");
+
+
+/* =========================
+   LOGGING
+========================= */
+
+function log(message,type="info"){
+
+  const line =
+    document.createElement("div");
+
+  line.className =
+    "log-line " + type;
+
+  const time =
+    new Date().toLocaleTimeString();
+
+  line.textContent =
+    "[" + time + "] " + message;
+
+  logEl.appendChild(line);
+
+  logEl.scrollTop =
+    logEl.scrollHeight;
+
+  console.log(message);
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function setStatus(message,color){
+
+  statusEl.textContent =
+    message;
+
+  statusEl.style.color =
+    color || "#ffffff";
+
+}
+
+
+/* =========================
+   DIGIT EXTRACTION
+========================= */
+
+function extractLastDigit(quote){
+
+  const text =
+    String(quote);
+
+  const clean =
+    text.replace(/[^0-9]/g,"");
+
+  if(!clean){
+    return null;
+  }
+
+  return Number(
+    clean.charAt(
+      clean.length - 1
+    )
+  );
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+function startAnalyzer(){
+
+  if(running){
+
+    stopAnalyzer();
+
+    return;
+
+  }
+
+
+  running = true;
+
+  document.getElementById("startButton")
+    .textContent =
+    "STOP ANALYZER";
+
+  document.getElementById("startButton")
+    .classList.add("stop");
+
+
+  digits = [];
+
+  tickCount = 0;
+
+  firstTickReceived = false;
+
+  secondsLeft = 30;
+
+  updateTimer();
+
+  startTimer();
+
+  log(
+    "================================",
+    "info"
+  );
+
+  log(
+    "JM DIGIT ANALYZER STARTING",
+    "info"
+  );
+
+  connectDeriv();
+
+}
+
+
+/* =========================
+   STOP
+========================= */
+
+function stopAnalyzer(){
+
+  running = false;
+
+
+  if(reconnectTimer){
+
+    clearTimeout(
+      reconnectTimer
+    );
+
+    reconnectTimer = null;
+
+  }
+
+
+  if(connectionTimeout){
+
+    clearTimeout(
+      connectionTimeout
+    );
+
+    connectionTimeout = null;
+
+  }
+
+
+  if(timerInterval){
+
+    clearInterval(
+      timerInterval
+    );
+
+    timerInterval = null;
+
+  }
+
+
+  if(socket){
+
+    try{
+
+      socket.onclose = null;
+
+      socket.close();
+
+    }catch(error){}
+
+    socket = null;
+
+  }
+
+
+  document.getElementById("startButton")
+    .textContent =
+    "START LIVE ANALYZER";
+
+  document.getElementById("startButton")
+    .classList.remove("stop");
+
+
+  setStatus(
+    "OFFLINE — STOPPED",
+    "#ff6868"
+  );
+
+
+  log(
+    "Analyzer stopped.",
+    "warn"
+  );
+
+}
+
+
+/* =====================================================
+   DERIV CONNECTION
+===================================================== */
+
 function connectDeriv(){
+
+  if(!running){
+
+    return;
+
+  }
+
 
   const market =
     document.getElementById("market").value;
 
+
   const wsURL =
     "wss://ws.binaryws.com/websockets/v3";
 
+
   /* =========================
-     CONNECTION CONTROL
+     CLEAN OLD CONNECTION
   ========================= */
 
   if(reconnectTimer){
-    clearTimeout(reconnectTimer);
+
+    clearTimeout(
+      reconnectTimer
+    );
+
     reconnectTimer = null;
+
   }
+
+
+  if(connectionTimeout){
+
+    clearTimeout(
+      connectionTimeout
+    );
+
+    connectionTimeout = null;
+
+  }
+
 
   if(socket){
 
@@ -24,64 +873,37 @@ function connectDeriv(){
       socket.onerror = null;
       socket.onclose = null;
 
-      if(
-        socket.readyState === WebSocket.OPEN ||
-        socket.readyState === WebSocket.CONNECTING
-      ){
+      socket.close();
 
-        socket.close();
-
-      }
-
-    }catch(error){
-
-      console.warn(
-        "Old socket cleanup warning:",
-        error
-      );
-
-    }
+    }catch(error){}
 
     socket = null;
+
   }
 
 
-  let connectionTimeout = null;
+  firstTickReceived = false;
 
-  let firstTickReceived = false;
-
-  let serverResponded = false;
-
-
-  /* =========================
-     STATUS
-  ========================= */
 
   setStatus(
-    "STEP 1/6 — Opening Deriv WebSocket...",
+    "STEP 1/6 — OPENING DERIV...",
     "#ffcc66"
   );
 
-  console.log(
-    "===================================="
+
+  log(
+    "Opening WebSocket...",
+    "info"
   );
 
-  console.log(
-    "JM DIGIT ANALYZER — DERIV CONNECTION"
+  log(
+    "Endpoint: " + wsURL,
+    "info"
   );
 
-  console.log(
-    "===================================="
-  );
-
-  console.log(
-    "Endpoint:",
-    wsURL
-  );
-
-  console.log(
-    "Market:",
-    market
+  log(
+    "Market: " + market,
+    "info"
   );
 
 
@@ -92,52 +914,65 @@ function connectDeriv(){
   try{
 
     socket =
-      new WebSocket(wsURL);
+      new WebSocket(
+        wsURL
+      );
 
   }catch(error){
 
-    console.error(
-      "STEP 1 FAILED — WebSocket creation:",
-      error
+    log(
+      "Browser rejected WebSocket: " +
+      error.message,
+      "bad"
     );
 
     setStatus(
-      "STEP 1 FAILED — Browser rejected WebSocket",
+      "WEBSOCKET CREATION FAILED",
       "#ff5555"
     );
 
+    scheduleReconnect();
+
     return;
+
   }
 
 
   /* =========================
-     CONNECTION TIMEOUT
+     TIMEOUT
   ========================= */
 
   connectionTimeout =
-    setTimeout(function(){
+    setTimeout(
+      function(){
 
-      if(
-        socket &&
-        socket.readyState !== WebSocket.OPEN
-      ){
+        if(
+          socket &&
+          socket.readyState !==
+          WebSocket.OPEN
+        ){
 
-        console.error(
-          "CONNECTION TIMEOUT"
-        );
+          log(
+            "WebSocket open timeout.",
+            "bad"
+          );
 
-        setStatus(
-          "CONNECTION TIMEOUT — WebSocket did not open",
-          "#ff5555"
-        );
+          setStatus(
+            "CONNECTION TIMEOUT",
+            "#ff5555"
+          );
 
-        try{
-          socket.close();
-        }catch(e){}
+          try{
 
-      }
+            socket.close();
 
-    },10000);
+          }catch(error){}
+
+        }
+
+      },
+      10000
+    );
 
 
   /* =========================
@@ -153,165 +988,94 @@ function connectDeriv(){
         connectionTimeout
       );
 
-      connectionTimeout = null;
+      connectionTimeout =
+        null;
+
     }
 
 
-    console.log(
-      "STEP 2 SUCCESS — WebSocket OPEN"
+    log(
+      "WebSocket OPEN.",
+      "good"
     );
 
 
     setStatus(
-      "STEP 2/6 — WebSocket connected",
+      "STEP 2/6 — DERIV CONNECTED",
       "#44dd88"
     );
 
 
     /*
-      --------------------------------
-      REQUEST 1
       SERVER TIME
-      --------------------------------
     */
 
-    try{
+    sendRequest({
 
-      socket.send(
-        JSON.stringify({
+      time:1,
 
-          time: 1,
+      req_id:100
 
-          req_id: 100
-
-        })
-      );
-
-      console.log(
-        "TIME REQUEST SENT"
-      );
-
-    }catch(error){
-
-      console.error(
-        "TIME REQUEST FAILED:",
-        error
-      );
-
-    }
+    });
 
 
     /*
-      --------------------------------
-      REQUEST 2
       ACTIVE SYMBOLS
-      --------------------------------
     */
 
-    try{
+    sendRequest({
 
-      socket.send(
-        JSON.stringify({
+      active_symbols:"brief",
 
-          active_symbols: "brief",
+      product_type:"basic",
 
-          product_type: "basic",
+      req_id:101
 
-          req_id: 101
-
-        })
-      );
-
-      console.log(
-        "ACTIVE SYMBOL REQUEST SENT"
-      );
-
-    }catch(error){
-
-      console.error(
-        "ACTIVE SYMBOL REQUEST FAILED:",
-        error
-      );
-
-    }
+    });
 
 
     /*
-      --------------------------------
-      REQUEST 3
-      TICK HISTORY
-      --------------------------------
+      HISTORY
     */
 
-    try{
+    sendRequest({
 
-      socket.send(
-        JSON.stringify({
+      ticks_history:market,
 
-          ticks_history: market,
+      count:20,
 
-          count: 20,
+      end:"latest",
 
-          end: "latest",
+      style:"ticks",
 
-          style: "ticks",
+      req_id:103
 
-          req_id: 103
-
-        })
-      );
-
-      console.log(
-        "TICK HISTORY REQUEST SENT"
-      );
-
-    }catch(error){
-
-      console.error(
-        "HISTORY REQUEST FAILED:",
-        error
-      );
-
-    }
+    });
 
 
     /*
-      --------------------------------
-      REQUEST 4
       LIVE TICKS
-      --------------------------------
     */
 
-    try{
+    sendRequest({
 
-      socket.send(
-        JSON.stringify({
+      ticks:market,
 
-          ticks: market,
+      subscribe:1,
 
-          subscribe: 1,
+      req_id:102
 
-          req_id: 102
+    });
 
-        })
-      );
 
-      console.log(
-        "LIVE TICK SUBSCRIPTION SENT"
-      );
-
-    }catch(error){
-
-      console.error(
-        "TICK SUBSCRIPTION FAILED:",
-        error
-      );
-
-    }
+    log(
+      "Requests sent. Waiting for Deriv...",
+      "info"
+    );
 
 
     setStatus(
-      "STEP 3/6 — Requests sent; waiting for Deriv",
+      "STEP 3/6 — WAITING FOR DERIV",
       "#ffcc66"
     );
 
@@ -319,7 +1083,7 @@ function connectDeriv(){
 
 
   /* =========================
-     MESSAGE RECEIVED
+     MESSAGE
   ========================= */
 
   socket.onmessage =
@@ -327,94 +1091,87 @@ function connectDeriv(){
 
     let data;
 
+
     try{
 
       data =
-        JSON.parse(event.data);
+        JSON.parse(
+          event.data
+        );
 
     }catch(error){
 
-      console.error(
-        "INVALID DERIV MESSAGE:",
-        event.data
+      log(
+        "Invalid server response.",
+        "bad"
       );
 
       return;
+
     }
 
 
-    console.log(
-      "DERIV MESSAGE:",
-      data
-    );
-
-
-    /* =========================
-       API ERROR
-    ========================= */
+    /*
+      API ERROR
+    */
 
     if(data.error){
 
-      console.error(
-        "DERIV API ERROR:",
-        data.error
+      log(
+        "DERIV ERROR: " +
+        (
+          data.error.code ||
+          ""
+        ) +
+        " " +
+        (
+          data.error.message ||
+          ""
+        ),
+        "bad"
       );
 
       setStatus(
-        "DERIV ERROR — " +
-        (
-          data.error.message ||
-          data.error.code ||
-          "Unknown error"
-        ),
+        "DERIV API ERROR",
         "#ff5555"
       );
 
       return;
+
     }
 
 
-    /* =========================
-       SERVER TIME
-    ========================= */
+    /*
+      SERVER TIME
+    */
 
     if(
       data.req_id === 100 &&
       data.msg_type === "time"
     ){
 
-      serverResponded = true;
-
-      console.log(
-        "STEP 4 SUCCESS — DERIV SERVER RESPONDED"
-      );
-
-      console.log(
-        "Server time:",
-        data.time
+      log(
+        "Deriv server responded.",
+        "good"
       );
 
       setStatus(
-        "STEP 4/6 — Deriv server responding",
+        "STEP 4/6 — DERIV SERVER ONLINE",
         "#44dd88"
       );
 
     }
 
 
-    /* =========================
-       ACTIVE SYMBOLS
-    ========================= */
+    /*
+      ACTIVE SYMBOLS
+    */
 
     if(
       data.req_id === 101 &&
-      data.msg_type === "active_symbols"
+      data.msg_type ===
+      "active_symbols"
     ){
-
-      console.log(
-        "ACTIVE SYMBOLS RECEIVED"
-      );
-
 
       const symbols =
         Array.isArray(
@@ -424,82 +1181,65 @@ function connectDeriv(){
         : [];
 
 
-      /*
-        Support both old and
-        newer response field names.
-      */
-
       const found =
-        symbols.some(function(symbol){
+        symbols.some(
+          function(item){
 
-          return (
-            symbol.symbol === market ||
-            symbol.underlying_symbol === market
-          );
+            return (
+              item.symbol === market ||
+              item.underlying_symbol === market
+            );
 
-        });
+          }
+        );
 
 
       if(found){
 
-        console.log(
-          "MARKET CONFIRMED:",
-          market
-        );
-
-        setStatus(
-          "STEP 5/6 — Market confirmed: " +
+        log(
+          "Market confirmed: " +
           market,
-          "#44dd88"
+          "good"
         );
 
       }else{
 
-        console.warn(
-          "MARKET NOT FOUND IN ACTIVE SYMBOL RESPONSE:",
-          market
+        log(
+          "Market was not found in active_symbols response.",
+          "warn"
         );
-
-        /*
-          Do NOT disconnect here.
-          The tick stream itself is
-          the final authority.
-        */
 
       }
 
     }
 
 
-    /* =========================
-       HISTORY
-    ========================= */
+    /*
+      HISTORY
+    */
 
     if(
       data.req_id === 103 &&
       data.msg_type === "history"
     ){
 
-      console.log(
-        "TICK HISTORY RECEIVED"
+      log(
+        "Tick history received.",
+        "good"
       );
 
-      console.log(
-        "History:",
-        data.history
-      );
 
       setStatus(
-        "STEP 5/6 — History received; waiting for live tick",
+        "STEP 5/6 — HISTORY RECEIVED; WAITING LIVE",
         "#44dd88"
       );
 
     }
 
 
-    /* =========================
-       LIVE TICK
-    ========================= */
+    /*
+      LIVE TICK
+    */
 
     if(
       data.msg_type === "tick" &&
@@ -508,50 +1248,36 @@ function connectDeriv(){
 
       firstTickReceived = true;
 
+      tickCount++;
+
+
       const quote =
         data.tick.quote;
 
+
       const symbol =
         data.tick.symbol ||
-        data.echo_req?.ticks ||
         market;
-
-      const epoch =
-        data.tick.epoch;
-
-
-      console.log(
-        "================================"
-      );
-
-      console.log(
-        "STEP 6 SUCCESS — LIVE TICK"
-      );
-
-      console.log(
-        "Symbol:",
-        symbol
-      );
-
-      console.log(
-        "Quote:",
-        quote
-      );
-
-      console.log(
-        "Epoch:",
-        epoch
-      );
-
-      console.log(
-        "================================"
-      );
 
 
       const digit =
         extractLastDigit(
           quote
         );
+
+
+      document.getElementById(
+        "latestQuote"
+      ).textContent =
+        quote;
+
+
+      document.getElementById(
+        "latestDigit"
+      ).textContent =
+        digit === null
+        ? "?"
+        : digit;
 
 
       if(digit !== null){
@@ -564,37 +1290,30 @@ function connectDeriv(){
         setStatus(
           "LIVE — " +
           symbol +
-          " • Digit " +
+          " • DIGIT " +
           digit,
           "#44dd88"
         );
 
 
-        /*
-          Once the first real tick
-          arrives, stop treating this
-          as a connection problem.
-        */
+        if(tickCount === 1){
 
-        if(reconnectTimer){
-
-          clearTimeout(
-            reconnectTimer
+          log(
+            "FIRST LIVE TICK RECEIVED!",
+            "good"
           );
 
-          reconnectTimer = null;
         }
 
-      }else{
 
-        console.error(
-          "DIGIT EXTRACTION FAILED",
-          quote
-        );
-
-        setStatus(
-          "LIVE tick received — digit extraction failed",
-          "#ff5555"
+        log(
+          "Tick #" +
+          tickCount +
+          " | " +
+          quote +
+          " | digit " +
+          digit,
+          "good"
         );
 
       }
@@ -605,31 +1324,19 @@ function connectDeriv(){
 
 
   /* =========================
-     WEBSOCKET ERROR
+     ERROR
   ========================= */
 
   socket.onerror =
-  function(error){
+  function(){
 
-    console.error(
-      "================================"
+    log(
+      "WebSocket error event.",
+      "bad"
     );
-
-    console.error(
-      "WEBSOCKET ERROR"
-    );
-
-    console.error(
-      error
-    );
-
-    console.error(
-      "================================"
-    );
-
 
     setStatus(
-      "WEBSOCKET ERROR — connection failed",
+      "WEBSOCKET ERROR",
       "#ff5555"
     );
 
@@ -637,7 +1344,7 @@ function connectDeriv(){
 
 
   /* =========================
-     WEBSOCKET CLOSED
+     CLOSE
   ========================= */
 
   socket.onclose =
@@ -649,109 +1356,781 @@ function connectDeriv(){
         connectionTimeout
       );
 
-      connectionTimeout = null;
+      connectionTimeout =
+        null;
+
     }
-
-
-    console.error(
-      "================================"
-    );
-
-    console.error(
-      "WEBSOCKET CLOSED"
-    );
-
-    console.error(
-      "Code:",
-      event.code
-    );
-
-    console.error(
-      "Reason:",
-      event.reason || "None"
-    );
-
-    console.error(
-      "Clean:",
-      event.wasClean
-    );
-
-    console.error(
-      "First tick received:",
-      firstTickReceived
-    );
-
-    console.error(
-      "================================"
-    );
 
 
     socket = null;
 
 
-    /*
-      If the user has stopped the
-      analyzer, do NOT reconnect.
-    */
+    log(
+      "WebSocket closed. Code: " +
+      event.code +
+      " | Reason: " +
+      (
+        event.reason ||
+        "none"
+      ),
+      "warn"
+    );
+
 
     if(!running){
 
-      setStatus(
-        "Disconnected — code " +
-        event.code,
-        "#ff5555"
-      );
-
       return;
+
     }
 
-
-    /*
-      If live ticks were already
-      received, this is a genuine
-      disconnection.
-    */
 
     if(firstTickReceived){
 
       setStatus(
-        "LIVE CONNECTION LOST — reconnecting...",
+        "LIVE CONNECTION LOST — RECONNECTING",
         "#ffcc66"
       );
 
     }else{
 
       setStatus(
-        "CONNECTION FAILED — code " +
-        event.code +
-        " — retrying...",
+        "CONNECTION FAILED — RECONNECTING",
         "#ff5555"
       );
 
     }
 
 
-    /*
-      Prevent duplicate reconnect
-      timers.
-    */
-
-    if(!reconnectTimer){
-
-      reconnectTimer =
-        setTimeout(
-          function(){
-
-            reconnectTimer = null;
-
-            connectDeriv();
-
-          },
-          5000
-        );
-
-    }
+    scheduleReconnect();
 
   };
 
 }
+
+
+/* =====================================================
+   SEND REQUEST
+===================================================== */
+
+function sendRequest(data){
+
+  if(
+    !socket ||
+    socket.readyState !==
+    WebSocket.OPEN
+  ){
+
+    log(
+      "Cannot send request — socket not open.",
+      "bad"
+    );
+
+    return false;
+
+  }
+
+
+  try{
+
+    socket.send(
+      JSON.stringify(
+        data
+      )
+    );
+
+    return true;
+
+  }catch(error){
+
+    log(
+      "Send error: " +
+      error.message,
+      "bad"
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =====================================================
+   RECONNECT
+===================================================== */
+
+function scheduleReconnect(){
+
+  if(!running){
+
+    return;
+
+  }
+
+
+  if(reconnectTimer){
+
+    return;
+
+  }
+
+
+  log(
+    "Next connection attempt in 5 seconds...",
+    "warn"
+  );
+
+
+  reconnectTimer =
+    setTimeout(
+      function(){
+
+        reconnectTimer = null;
+
+        connectDeriv();
+
+      },
+      5000
+    );
+
+}
+
+
+/* =====================================================
+   ADD DIGIT
+===================================================== */
+
+function addDigit(digit){
+
+  digits.push(
+    Number(digit)
+  );
+
+
+  /*
+    Keep latest 100
+    observations.
+  */
+
+  if(
+    digits.length > 100
+  ){
+
+    digits.shift();
+
+  }
+
+
+  updateAnalysis();
+
+}
+
+
+/* =====================================================
+   RESET WINDOW
+===================================================== */
+
+function resetAnalysisWindow(){
+
+  digits = [];
+
+  log(
+    "30-second analysis window refreshed.",
+    "info"
+  );
+
+  updateAnalysis();
+
+}
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+function startTimer(){
+
+  if(timerInterval){
+
+    clearInterval(
+      timerInterval
+    );
+
+  }
+
+
+  timerInterval =
+    setInterval(
+      function(){
+
+        if(!running){
+
+          return;
+
+        }
+
+
+        secondsLeft--;
+
+
+        if(
+          secondsLeft <= 0
+        ){
+
+          secondsLeft = 30;
+
+          resetAnalysisWindow();
+
+        }
+
+
+        updateTimer();
+
+      },
+      1000
+    );
+
+}
+
+
+function updateTimer(){
+
+  document.getElementById(
+    "timer"
+  ).textContent =
+    secondsLeft + "s";
+
+}
+
+
+/* =====================================================
+   ANALYSIS
+===================================================== */
+
+function updateAnalysis(){
+
+  const total =
+    digits.length;
+
+
+  document.getElementById(
+    "observations"
+  ).textContent =
+    total;
+
+
+  const counts =
+    Array(10).fill(0);
+
+
+  digits.forEach(
+    function(d){
+
+      if(
+        d >= 0 &&
+        d <= 9
+      ){
+
+        counts[d]++;
+
+      }
+
+    }
+  );
+
+
+  updateDistribution(
+    counts,
+    total
+  );
+
+
+  if(total === 0){
+
+    document.getElementById(
+      "matches"
+    ).textContent = "—";
+
+    document.getElementById(
+      "differs"
+    ).textContent = "—";
+
+    document.getElementById(
+      "even"
+    ).textContent = "—";
+
+    document.getElementById(
+      "odd"
+    ).textContent = "—";
+
+    document.getElementById(
+      "over"
+    ).textContent = "—";
+
+    document.getElementById(
+      "under"
+    ).textContent = "—";
+
+    document.getElementById(
+      "mostFrequent"
+    ).textContent = "—";
+
+    document.getElementById(
+      "leastFrequent"
+    ).textContent = "—";
+
+    document.getElementById(
+      "signal"
+    ).textContent =
+      "WAITING FOR DATA";
+
+    document.getElementById(
+      "confidence"
+    ).textContent =
+      "No signal yet.";
+
+    return;
+
+  }
+
+
+  /* =========================
+     MOST / LEAST
+  ========================= */
+
+  let most =
+    0;
+
+  let least =
+    0;
+
+
+  for(
+    let i = 1;
+    i < 10;
+    i++
+  ){
+
+    if(
+      counts[i] >
+      counts[most]
+    ){
+
+      most = i;
+
+    }
+
+
+    if(
+      counts[i] <
+      counts[least]
+    ){
+
+      least = i;
+
+    }
+
+  }
+
+
+  document.getElementById(
+    "mostFrequent"
+  ).textContent =
+    most +
+    " (" +
+    percent(
+      counts[most],
+      total
+    ) +
+    "%)";
+
+
+  document.getElementById(
+    "leastFrequent"
+  ).textContent =
+    least +
+    " (" +
+    percent(
+      counts[least],
+      total
+    ) +
+    "%)";
+
+
+  /* =========================
+     MATCHES / DIFFERS
+  ========================= */
+
+  const matchRate =
+    Math.max(
+      ...counts
+    ) / total * 100;
+
+
+  const differRate =
+    100 -
+    Math.min(
+      ...counts
+    ) / total * 100;
+
+
+  document.getElementById(
+    "matches"
+  ).textContent =
+    matchRate.toFixed(1) +
+    "%";
+
+
+  document.getElementById(
+    "differs"
+  ).textContent =
+    differRate.toFixed(1) +
+    "%";
+
+
+  /* =========================
+     EVEN / ODD
+  ========================= */
+
+  let evenCount =
+    0;
+
+
+  digits.forEach(
+    function(d){
+
+      if(
+        d % 2 === 0
+      ){
+
+        evenCount++;
+
+      }
+
+    }
+  );
+
+
+  const oddCount =
+    total -
+    evenCount;
+
+
+  document.getElementById(
+    "even"
+  ).textContent =
+    percent(
+      evenCount,
+      total
+    ) +
+    "%";
+
+
+  document.getElementById(
+    "odd"
+  ).textContent =
+    percent(
+      oddCount,
+      total
+    ) +
+    "%";
+
+
+  /* =========================
+     OVER / UNDER
+  ========================= */
+
+  let overCount =
+    0;
+
+
+  digits.forEach(
+    function(d){
+
+      if(d > 4){
+
+        overCount++;
+
+      }
+
+    }
+  );
+
+
+  const underCount =
+    total -
+    overCount;
+
+
+  document.getElementById(
+    "over"
+  ).textContent =
+    percent(
+      overCount,
+      total
+    ) +
+    "%";
+
+
+  document.getElementById(
+    "under"
+  ).textContent =
+    percent(
+      underCount,
+      total
+    ) +
+    "%";
+
+
+  updateSignal(
+    counts,
+    total,
+    evenCount,
+    oddCount,
+    overCount,
+    underCount
+  );
+
+}
+
+
+/* =====================================================
+   DISTRIBUTION
+===================================================== */
+
+function updateDistribution(
+  counts,
+  total
+){
+
+  const container =
+    document.getElementById(
+      "distribution"
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  for(
+    let digit = 0;
+    digit <= 9;
+    digit++
+  ){
+
+    const p =
+      percent(
+        counts[digit],
+        total
+      );
+
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "bar";
+
+
+    row.innerHTML =
+
+      '<div class="bar-label">' +
+
+      '<span>Digit ' +
+      digit +
+      '</span>' +
+
+      '<span>' +
+      p +
+      '% (' +
+      counts[digit] +
+      ')</span>' +
+
+      '</div>' +
+
+      '<div class="track">' +
+
+      '<div class="fill" style="width:' +
+      p +
+      '%"></div>' +
+
+      '</div>';
+
+
+    container.appendChild(
+      row
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   SIGNAL ENGINE
+===================================================== */
+
+function updateSignal(
+  counts,
+  total,
+  evenCount,
+  oddCount,
+  overCount,
+  underCount
+){
+
+  /*
+    IMPORTANT:
+    This is a statistical signal,
+    not a guaranteed prediction.
+  */
+
+
+  const candidates = [
+
+    {
+      name:"MATCHES " +
+        counts.indexOf(
+          Math.max(...counts)
+        ),
+
+      value:
+        Math.max(...counts) /
+        total *
+        100
+    },
+
+    {
+      name:"DIFFERS",
+
+      value:
+        100 -
+        Math.min(...counts) /
+        total *
+        100
+    },
+
+    {
+      name:"EVEN",
+
+      value:
+        evenCount /
+        total *
+        100
+    },
+
+    {
+      name:"ODD",
+
+      value:
+        oddCount /
+        total *
+        100
+    },
+
+    {
+      name:"OVER 4",
+
+      value:
+        overCount /
+        total *
+        100
+    },
+
+    {
+      name:"UNDER 5",
+
+      value:
+        underCount /
+        total *
+        100
+    }
+
+  ];
+
+
+  candidates.sort(
+    function(a,b){
+
+      return b.value -
+        a.value;
+
+    }
+  );
+
+
+  const best =
+    candidates[0];
+
+
+  document.getElementById(
+    "signal"
+  ).textContent =
+    best.name;
+
+
+  document.getElementById(
+    "confidence"
+  ).textContent =
+    "Observed frequency: " +
+    best.value.toFixed(1) +
+    "% • " +
+    total +
+    " observations";
+
+
+}
+
+
+/* =====================================================
+   PERCENT
+===================================================== */
+
+function percent(
+  value,
+  total
+){
+
+  if(!total){
+
+    return "0.0";
+
+  }
+
+
+  return (
+    value /
+    total *
+    100
+  ).toFixed(1);
+
+}
+
+
+/* =====================================================
+   INITIAL DISPLAY
+===================================================== */
+
+updateTimer();
+
+updateAnalysis();
+
+
+log(
+  "JM Digit Analyzer loaded.",
+  "info"
+);
+
+log(
+  "Waiting for START LIVE ANALYZER.",
+  "info"
+);
+
+</script>
+
+</body>
+  </html>
