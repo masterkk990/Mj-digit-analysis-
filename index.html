@@ -1,392 +1,757 @@
 function connectDeriv(){
 
-const market =
-document.getElementById("market").value;
+  const market =
+    document.getElementById("market").value;
 
-const wsURL =
-"wss://ws.binaryws.com/websockets/v3";
+  const wsURL =
+    "wss://ws.binaryws.com/websockets/v3";
 
-setStatus(
-"STEP 1/5 — Opening Deriv WebSocket...",
-"#ffcc66"
-);
+  /* =========================
+     CONNECTION CONTROL
+  ========================= */
 
-console.log("JM DIAGNOSTIC: Starting connection");
-console.log("Endpoint:", wsURL);
-console.log("Market:", market);
-
-try{
-
-socket = new WebSocket(wsURL);
-
-}catch(error){
-
-console.error(
-  "STEP 1 FAILED:",
-  error
-);
-
-setStatus(
-  "STEP 1 FAILED — Browser rejected WebSocket",
-  "#ff5555"
-);
-
-return;
-
-}
-
-/* =========================
-CONNECTION OPENED
-========================= */
-
-socket.onopen = function(){
-
-console.log(
-  "STEP 1 SUCCESS — WebSocket OPEN"
-);
-
-setStatus(
-  "STEP 2/5 — WebSocket connected",
-  "#44dd88"
-);
-
-
-/*
-  Request server time.
-  This is a simple connectivity
-  confirmation.
-*/
-
-socket.send(
-  JSON.stringify({
-
-    time: 1,
-
-    req_id: 100
-
-  })
-);
-
-
-/*
-  Ask Deriv which symbols are
-  available.
-*/
-
-socket.send(
-  JSON.stringify({
-
-    active_symbols: "brief",
-
-    product_type: "basic",
-
-    req_id: 101
-
-  })
-);
-
-
-/*
-  Subscribe to the selected
-  live market.
-*/
-
-socket.send(
-  JSON.stringify({
-
-    ticks: market,
-
-    subscribe: 1,
-
-    req_id: 102
-
-  })
-);
-
-
-/*
-  Request recent tick history.
-  This also proves the symbol
-  is available.
-*/
-
-socket.send(
-  JSON.stringify({
-
-    ticks_history: market,
-
-    count: 20,
-
-    end: "latest",
-
-    style: "ticks",
-
-    req_id: 103
-
-  })
-);
-
-};
-
-/* =========================
-MESSAGES
-========================= */
-
-socket.onmessage = function(event){
-
-try{
-
-  const data =
-    JSON.parse(event.data);
-
-  console.log(
-    "DERIV RESPONSE:",
-    data
-  );
-
-
-  /* SERVER TIME */
-
-  if(
-    data.req_id === 100 &&
-    data.msg_type === "time"
-  ){
-
-    setStatus(
-      "STEP 3/5 — Deriv server responding",
-      "#44dd88"
-    );
-
-    console.log(
-      "STEP 3 SUCCESS — Server time:",
-      data.time
-    );
-
+  if(reconnectTimer){
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
   }
 
+  if(socket){
 
-  /* ACTIVE SYMBOLS */
+    try{
 
-  if(
-    data.req_id === 101 &&
-    data.msg_type === "active_symbols"
-  ){
+      socket.onopen = null;
+      socket.onmessage = null;
+      socket.onerror = null;
+      socket.onclose = null;
 
-    const found =
-      data.active_symbols.some(
-        symbol =>
-          symbol.symbol === market
-      );
+      if(
+        socket.readyState === WebSocket.OPEN ||
+        socket.readyState === WebSocket.CONNECTING
+      ){
 
+        socket.close();
 
-    if(found){
-
-      console.log(
-        "STEP 4 SUCCESS — Market exists:",
-        market
-      );
-
-      setStatus(
-        "STEP 4/5 — Market confirmed: " +
-        market,
-        "#44dd88"
-      );
-
-    }else{
-
-      console.error(
-        "MARKET NOT FOUND:",
-        market
-      );
-
-      setStatus(
-        "Market not found: " +
-        market,
-        "#ff5555"
-      );
-
-    }
-
-  }
-
-
-  /* TICK HISTORY */
-
-  if(
-    data.req_id === 103 &&
-    data.msg_type === "history"
-  ){
-
-    console.log(
-      "HISTORY RECEIVED:",
-      data
-    );
-
-    setStatus(
-      "STEP 4/5 — History received; waiting for live tick",
-      "#44dd88"
-    );
-
-  }
-
-
-  /* LIVE TICK */
-
-  if(
-    data.msg_type === "tick" &&
-    data.tick
-  ){
-
-    const quote =
-      data.tick.quote;
-
-    const symbol =
-      data.tick.symbol;
-
-    const epoch =
-      data.tick.epoch;
-
-
-    console.log(
-      "STEP 5 SUCCESS — LIVE TICK",
-      {
-        symbol:symbol,
-        quote:quote,
-        epoch:epoch
       }
-    );
 
+    }catch(error){
 
-    const digit =
-      extractLastDigit(quote);
-
-
-    if(digit !== null){
-
-      addDigit(digit);
-
-      setStatus(
-        "LIVE — " +
-        symbol +
-        " • Digit " +
-        digit,
-        "#44dd88"
-      );
-
-    }else{
-
-      setStatus(
-        "Tick received but digit extraction failed",
-        "#ff5555"
+      console.warn(
+        "Old socket cleanup warning:",
+        error
       );
 
     }
 
+    socket = null;
   }
 
 
-  /* DERIV ERROR */
+  let connectionTimeout = null;
 
-  if(data.error){
+  let firstTickReceived = false;
 
-    console.error(
-      "DERIV API ERROR:",
-      data.error
-    );
+  let serverResponded = false;
 
 
-    setStatus(
-      "DERIV ERROR: " +
-      (
-        data.error.message ||
-        data.error.code ||
-        "Unknown error"
-      ),
-      "#ff5555"
-    );
-
-  }
-
-}catch(error){
-
-  console.error(
-    "MESSAGE PROCESSING ERROR:",
-    error
-  );
+  /* =========================
+     STATUS
+  ========================= */
 
   setStatus(
-    "Message processing error",
-    "#ff5555"
-  );
-
-}
-
-};
-
-/* =========================
-WEBSOCKET ERROR
-========================= */
-
-socket.onerror = function(error){
-
-console.error(
-  "WEBSOCKET ERROR:",
-  error
-);
-
-
-setStatus(
-  "WEBSOCKET ERROR — check console",
-  "#ff5555"
-);
-
-};
-
-/* =========================
-WEBSOCKET CLOSED
-========================= */
-
-socket.onclose = function(event){
-
-socket = null;
-
-
-console.error(
-  "WEBSOCKET CLOSED",
-  {
-    code:event.code,
-    reason:event.reason,
-    wasClean:event.wasClean
-  }
-);
-
-
-if(running){
-
-  setStatus(
-    "CLOSED — code " +
-    event.code +
-    " — reconnecting...",
+    "STEP 1/6 — Opening Deriv WebSocket...",
     "#ffcc66"
   );
 
-
-  reconnectTimer =
-    setTimeout(
-      connectDeriv,
-      5000
-    );
-
-}else{
-
-  setStatus(
-    "Disconnected — code " +
-    event.code,
-    "#ff5555"
+  console.log(
+    "===================================="
   );
 
-}
+  console.log(
+    "JM DIGIT ANALYZER — DERIV CONNECTION"
+  );
 
-};
+  console.log(
+    "===================================="
+  );
+
+  console.log(
+    "Endpoint:",
+    wsURL
+  );
+
+  console.log(
+    "Market:",
+    market
+  );
+
+
+  /* =========================
+     CREATE SOCKET
+  ========================= */
+
+  try{
+
+    socket =
+      new WebSocket(wsURL);
+
+  }catch(error){
+
+    console.error(
+      "STEP 1 FAILED — WebSocket creation:",
+      error
+    );
+
+    setStatus(
+      "STEP 1 FAILED — Browser rejected WebSocket",
+      "#ff5555"
+    );
+
+    return;
+  }
+
+
+  /* =========================
+     CONNECTION TIMEOUT
+  ========================= */
+
+  connectionTimeout =
+    setTimeout(function(){
+
+      if(
+        socket &&
+        socket.readyState !== WebSocket.OPEN
+      ){
+
+        console.error(
+          "CONNECTION TIMEOUT"
+        );
+
+        setStatus(
+          "CONNECTION TIMEOUT — WebSocket did not open",
+          "#ff5555"
+        );
+
+        try{
+          socket.close();
+        }catch(e){}
+
+      }
+
+    },10000);
+
+
+  /* =========================
+     OPEN
+  ========================= */
+
+  socket.onopen =
+  function(){
+
+    if(connectionTimeout){
+
+      clearTimeout(
+        connectionTimeout
+      );
+
+      connectionTimeout = null;
+    }
+
+
+    console.log(
+      "STEP 2 SUCCESS — WebSocket OPEN"
+    );
+
+
+    setStatus(
+      "STEP 2/6 — WebSocket connected",
+      "#44dd88"
+    );
+
+
+    /*
+      --------------------------------
+      REQUEST 1
+      SERVER TIME
+      --------------------------------
+    */
+
+    try{
+
+      socket.send(
+        JSON.stringify({
+
+          time: 1,
+
+          req_id: 100
+
+        })
+      );
+
+      console.log(
+        "TIME REQUEST SENT"
+      );
+
+    }catch(error){
+
+      console.error(
+        "TIME REQUEST FAILED:",
+        error
+      );
+
+    }
+
+
+    /*
+      --------------------------------
+      REQUEST 2
+      ACTIVE SYMBOLS
+      --------------------------------
+    */
+
+    try{
+
+      socket.send(
+        JSON.stringify({
+
+          active_symbols: "brief",
+
+          product_type: "basic",
+
+          req_id: 101
+
+        })
+      );
+
+      console.log(
+        "ACTIVE SYMBOL REQUEST SENT"
+      );
+
+    }catch(error){
+
+      console.error(
+        "ACTIVE SYMBOL REQUEST FAILED:",
+        error
+      );
+
+    }
+
+
+    /*
+      --------------------------------
+      REQUEST 3
+      TICK HISTORY
+      --------------------------------
+    */
+
+    try{
+
+      socket.send(
+        JSON.stringify({
+
+          ticks_history: market,
+
+          count: 20,
+
+          end: "latest",
+
+          style: "ticks",
+
+          req_id: 103
+
+        })
+      );
+
+      console.log(
+        "TICK HISTORY REQUEST SENT"
+      );
+
+    }catch(error){
+
+      console.error(
+        "HISTORY REQUEST FAILED:",
+        error
+      );
+
+    }
+
+
+    /*
+      --------------------------------
+      REQUEST 4
+      LIVE TICKS
+      --------------------------------
+    */
+
+    try{
+
+      socket.send(
+        JSON.stringify({
+
+          ticks: market,
+
+          subscribe: 1,
+
+          req_id: 102
+
+        })
+      );
+
+      console.log(
+        "LIVE TICK SUBSCRIPTION SENT"
+      );
+
+    }catch(error){
+
+      console.error(
+        "TICK SUBSCRIPTION FAILED:",
+        error
+      );
+
+    }
+
+
+    setStatus(
+      "STEP 3/6 — Requests sent; waiting for Deriv",
+      "#ffcc66"
+    );
+
+  };
+
+
+  /* =========================
+     MESSAGE RECEIVED
+  ========================= */
+
+  socket.onmessage =
+  function(event){
+
+    let data;
+
+    try{
+
+      data =
+        JSON.parse(event.data);
+
+    }catch(error){
+
+      console.error(
+        "INVALID DERIV MESSAGE:",
+        event.data
+      );
+
+      return;
+    }
+
+
+    console.log(
+      "DERIV MESSAGE:",
+      data
+    );
+
+
+    /* =========================
+       API ERROR
+    ========================= */
+
+    if(data.error){
+
+      console.error(
+        "DERIV API ERROR:",
+        data.error
+      );
+
+      setStatus(
+        "DERIV ERROR — " +
+        (
+          data.error.message ||
+          data.error.code ||
+          "Unknown error"
+        ),
+        "#ff5555"
+      );
+
+      return;
+    }
+
+
+    /* =========================
+       SERVER TIME
+    ========================= */
+
+    if(
+      data.req_id === 100 &&
+      data.msg_type === "time"
+    ){
+
+      serverResponded = true;
+
+      console.log(
+        "STEP 4 SUCCESS — DERIV SERVER RESPONDED"
+      );
+
+      console.log(
+        "Server time:",
+        data.time
+      );
+
+      setStatus(
+        "STEP 4/6 — Deriv server responding",
+        "#44dd88"
+      );
+
+    }
+
+
+    /* =========================
+       ACTIVE SYMBOLS
+    ========================= */
+
+    if(
+      data.req_id === 101 &&
+      data.msg_type === "active_symbols"
+    ){
+
+      console.log(
+        "ACTIVE SYMBOLS RECEIVED"
+      );
+
+
+      const symbols =
+        Array.isArray(
+          data.active_symbols
+        )
+        ? data.active_symbols
+        : [];
+
+
+      /*
+        Support both old and
+        newer response field names.
+      */
+
+      const found =
+        symbols.some(function(symbol){
+
+          return (
+            symbol.symbol === market ||
+            symbol.underlying_symbol === market
+          );
+
+        });
+
+
+      if(found){
+
+        console.log(
+          "MARKET CONFIRMED:",
+          market
+        );
+
+        setStatus(
+          "STEP 5/6 — Market confirmed: " +
+          market,
+          "#44dd88"
+        );
+
+      }else{
+
+        console.warn(
+          "MARKET NOT FOUND IN ACTIVE SYMBOL RESPONSE:",
+          market
+        );
+
+        /*
+          Do NOT disconnect here.
+          The tick stream itself is
+          the final authority.
+        */
+
+      }
+
+    }
+
+
+    /* =========================
+       HISTORY
+    ========================= */
+
+    if(
+      data.req_id === 103 &&
+      data.msg_type === "history"
+    ){
+
+      console.log(
+        "TICK HISTORY RECEIVED"
+      );
+
+      console.log(
+        "History:",
+        data.history
+      );
+
+      setStatus(
+        "STEP 5/6 — History received; waiting for live tick",
+        "#44dd88"
+      );
+
+    }
+
+
+    /* =========================
+       LIVE TICK
+    ========================= */
+
+    if(
+      data.msg_type === "tick" &&
+      data.tick
+    ){
+
+      firstTickReceived = true;
+
+      const quote =
+        data.tick.quote;
+
+      const symbol =
+        data.tick.symbol ||
+        data.echo_req?.ticks ||
+        market;
+
+      const epoch =
+        data.tick.epoch;
+
+
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "STEP 6 SUCCESS — LIVE TICK"
+      );
+
+      console.log(
+        "Symbol:",
+        symbol
+      );
+
+      console.log(
+        "Quote:",
+        quote
+      );
+
+      console.log(
+        "Epoch:",
+        epoch
+      );
+
+      console.log(
+        "================================"
+      );
+
+
+      const digit =
+        extractLastDigit(
+          quote
+        );
+
+
+      if(digit !== null){
+
+        addDigit(
+          digit
+        );
+
+
+        setStatus(
+          "LIVE — " +
+          symbol +
+          " • Digit " +
+          digit,
+          "#44dd88"
+        );
+
+
+        /*
+          Once the first real tick
+          arrives, stop treating this
+          as a connection problem.
+        */
+
+        if(reconnectTimer){
+
+          clearTimeout(
+            reconnectTimer
+          );
+
+          reconnectTimer = null;
+        }
+
+      }else{
+
+        console.error(
+          "DIGIT EXTRACTION FAILED",
+          quote
+        );
+
+        setStatus(
+          "LIVE tick received — digit extraction failed",
+          "#ff5555"
+        );
+
+      }
+
+    }
+
+  };
+
+
+  /* =========================
+     WEBSOCKET ERROR
+  ========================= */
+
+  socket.onerror =
+  function(error){
+
+    console.error(
+      "================================"
+    );
+
+    console.error(
+      "WEBSOCKET ERROR"
+    );
+
+    console.error(
+      error
+    );
+
+    console.error(
+      "================================"
+    );
+
+
+    setStatus(
+      "WEBSOCKET ERROR — connection failed",
+      "#ff5555"
+    );
+
+  };
+
+
+  /* =========================
+     WEBSOCKET CLOSED
+  ========================= */
+
+  socket.onclose =
+  function(event){
+
+    if(connectionTimeout){
+
+      clearTimeout(
+        connectionTimeout
+      );
+
+      connectionTimeout = null;
+    }
+
+
+    console.error(
+      "================================"
+    );
+
+    console.error(
+      "WEBSOCKET CLOSED"
+    );
+
+    console.error(
+      "Code:",
+      event.code
+    );
+
+    console.error(
+      "Reason:",
+      event.reason || "None"
+    );
+
+    console.error(
+      "Clean:",
+      event.wasClean
+    );
+
+    console.error(
+      "First tick received:",
+      firstTickReceived
+    );
+
+    console.error(
+      "================================"
+    );
+
+
+    socket = null;
+
+
+    /*
+      If the user has stopped the
+      analyzer, do NOT reconnect.
+    */
+
+    if(!running){
+
+      setStatus(
+        "Disconnected — code " +
+        event.code,
+        "#ff5555"
+      );
+
+      return;
+    }
+
+
+    /*
+      If live ticks were already
+      received, this is a genuine
+      disconnection.
+    */
+
+    if(firstTickReceived){
+
+      setStatus(
+        "LIVE CONNECTION LOST — reconnecting...",
+        "#ffcc66"
+      );
+
+    }else{
+
+      setStatus(
+        "CONNECTION FAILED — code " +
+        event.code +
+        " — retrying...",
+        "#ff5555"
+      );
+
+    }
+
+
+    /*
+      Prevent duplicate reconnect
+      timers.
+    */
+
+    if(!reconnectTimer){
+
+      reconnectTimer =
+        setTimeout(
+          function(){
+
+            reconnectTimer = null;
+
+            connectDeriv();
+
+          },
+          5000
+        );
+
+    }
+
+  };
 
 }
