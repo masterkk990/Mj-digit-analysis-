@@ -1,288 +1,676 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07111f">
-
-<title>JM Digit Analyzer</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Digit Analyzer — Phase 13 Enhanced Model Competition</title>
 <style>
-*{
-  box-sizing:border-box;
+:root{--bg:#050b14;--card:#0e1a2b;--card2:#091321;--line:#243650;--text:#eef5ff;--muted:#91a4bf;--good:#35d399;--warn:#f5c451;--bad:#fb7185;--blue:#5ea7ff;--purple:#a78bfa}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#050b14,#091526 55%,#050b14);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:14px}main{max-width:1180px;margin:auto;padding:12px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.title{font-size:22px;font-weight:900}.sub{font-size:12px;color:var(--muted);margin-top:4px}.status{font-weight:900;padding:8px 11px;border:1px solid var(--line);border-radius:20px}.live{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.off{color:var(--muted)}
+.card{background:rgba(14,26,43,.97);border:1px solid var(--line);border-radius:14px;padding:13px;margin:10px 0;box-shadow:0 8px 26px rgba(0,0,0,.18)}h2{font-size:17px;margin:0 0 10px}h3{font-size:14px;margin:0 0 9px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.box{background:var(--card2);border:1px solid #1c2b42;border-radius:10px;padding:10px;min-width:0}.label{font-size:10px;text-transform:uppercase;color:var(--muted)}.big{font-size:23px;font-weight:900;margin-top:5px}.small{font-size:11px;color:var(--muted);margin-top:4px}button,select,input,textarea{font:inherit}button,select,input{min-height:40px;border-radius:9px;border:1px solid #33465f;background:#14243a;color:var(--text);padding:9px}button{font-weight:800;cursor:pointer}button.primary{background:#1d4ed8;border-color:#2563eb}button.secondary{background:#27354a;border-color:#3b4f6b}button.danger{background:#3b1722;border-color:#6b2538}.controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr;gap:8px}.signalGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.signal{border:1px solid #2a3c56;border-radius:12px;padding:12px;background:#0a1525}.signal .main{font-size:21px;font-weight:900;margin-top:6px}.signal .detail{font-size:11px;color:var(--muted);margin-top:5px}.ready{border-color:#13795b}.watch{border-color:#806313}.wait{border-color:#34455e}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#17263b;color:#cbd8e9;font-size:11px;font-weight:800;margin:3px}.bar{height:8px;background:#17283d;border-radius:8px;overflow:hidden}.fill{height:100%;background:var(--blue)}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px;border-bottom:1px solid #203047;text-align:left}th{color:#aebdd1}.scroll{overflow:auto}.log{height:145px;overflow:auto;background:#050b13;border-radius:9px;padding:9px;font:11px monospace;line-height:1.6}.note{font-size:11px;color:var(--muted);line-height:1.5}.hidden{display:none}.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:8px}.meter{height:10px;background:#18293e;border-radius:8px;overflow:hidden}.meter>div{height:100%;background:var(--purple)}.manual{width:100%;min-height:70px;resize:vertical;background:#091321;color:var(--text);border:1px solid #2c405b;border-radius:9px;padding:9px}.timerCard{border:1px solid #2a3c56;border-radius:12px;padding:12px;background:#0a1525}.timerRow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.timerValue{font-size:34px;font-weight:900;letter-spacing:1px}.timerProgress{height:9px;background:#17283d;border-radius:9px;overflow:hidden;margin-top:8px}.timerProgress>div{height:100%;width:100%;background:var(--purple);transition:width .2s linear}.resultHit{color:var(--good);font-weight:900}.resultMiss{color:var(--bad);font-weight:900}.resultPending{color:var(--warn);font-weight:900}.historyTable{max-height:300px;overflow:auto}.historyTable table{min-width:650px}
+@media(max-width:800px){.controls{grid-template-columns:repeat(2,1fr)}.grid,.grid5{grid-template-columns:repeat(2,1fr)}.signalGrid{grid-template-columns:1fr}.title{font-size:19px}}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+  <div>
+    <div class="title">⚡ JM DIGIT ANALYZER — PHASE 13 ENHANCED</div>
+    <div class="sub">Data → adaptive model → calibration → prediction expiry → fresh prediction[span_2](start_span)[span_2](end_span)</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button id="soundToggle" class="secondary" style="min-height:34px;padding:4px 10px;font-size:11px">🔊 SOUND: ON</button>
+    <div id="status" class="status off">● OFFLINE</div>
+  </div>
+</div>
+
+<section class="card">
+<h2>🎛️ Control Center</h2>
+<div class="controls">
+<select id="symbol"><option>1HZ10V</option><option>1HZ25V</option><option>1HZ50V</option><option>1HZ75V</option><option selected>1HZ100V</option></select>
+<select id="recent"><option value="50">Recent 50</option><option value="100" selected>Recent 100</option><option value="200">Recent 200</option><option value="300">Recent 300</option></select>
+<button id="connect" class="primary">CONNECT LIVE</button><button id="stop">DISCONNECT</button><button id="backtest">RUN BACKTEST</button><button id="clear" class="danger">CLEAR</button>
+</div>
+<div class="grid" style="margin-top:8px">
+<div class="box"><div class="label">Ticks</div><div id="count" class="big">0</div></div><div class="box"><div class="label">Current digit</div><div id="cur" class="big">—</div></div><div class="box"><div class="label">Last quote</div><div id="quote" class="big">—</div></div><div class="box"><div class="label">Pip size</div><div id="pip" class="big">—</div></div>
+</div><div class="note">Public market-data mode only. No trade execution is included in this unified research build[span_3](start_span)[span_3](end_span).</div>
+</section>
+
+<section class="card"><div class="sectionTitle"><h2>🚦 PRIMARY SIGNAL BOARD</h2><span id="engineState" class="badge">WAIT</span></div>
+<div class="signalGrid">
+<div id="matchCard" class="signal wait"><h3>🎯 MATCHES / DIFFERS</h3><div class="main" id="matchMain">WAIT</div><div class="detail" id="matchDetail">Need live data and confirmation[span_4](start_span)[span_4](end_span).</div><div class="meter" style="margin-top:8px"><div id="matchMeter" style="width:0%"></div></div></div>
+<div id="rangeCard" class="signal wait"><h3>📈 OVER / UNDER 5</h3><div class="main" id="rangeMain">WAIT</div><div class="detail" id="rangeDetail">—</div><div class="meter" style="margin-top:8px"><div id="rangeMeter" style="width:0%"></div></div></div>
+<div id="parityCard" class="signal wait"><h3>⚖️ EVEN / ODD</h3><div class="main" id="parityMain">WAIT</div><div class="detail" id="parityDetail">—</div><div class="meter" style="margin-top:8px"><div id="parityMeter" style="width:0%"></div></div></div>
+</div>
+<div class="grid" style="margin-top:9px">
+<div class="box"><div class="label">Primary candidate</div><div id="candidate" class="big">—</div><div id="candidateReason" class="small">—</div></div>
+<div class="box"><div class="label">Model probability</div><div id="modelProb" class="big">—</div><div class="small">10% uniform baseline[span_5](start_span)[span_5](end_span)</div></div>
+<div class="box"><div class="label">Confirmations</div><div id="confirm" class="big">—</div><div class="small">independent checks[span_6](start_span)[span_6](end_span)</div></div>
+<div class="box"><div class="label">Stable lock</div><div id="lock" class="big">OFF</div><div id="lockDetail" class="small">Waiting for repeated confirmation[span_7](start_span)[span_7](end_span)</div></div>
+</div></section>
+
+<section class="card timerCard" id="predictionExpiryCard">
+  <div class="sectionTitle">
+    <h2>⏳ PREDICTION EXPIRY TIMER</h2>
+    <span id="predictionStatus" class="badge">WAITING</span>
+  </div>
+  <div class="timerRow" style="margin-top:6px">
+    <div>
+      <div class="label">Active prediction</div>
+      <div id="predictionTimerLabel" class="big" style="font-size:20px">WAIT FOR FRESH PREDICTION</div>
+    </div>
+    <div style="text-align:right">
+      <div class="label">EXPIRES IN</div>
+      <div id="predictionTimer" class="timerValue">—</div>
+    </div>
+  </div>
+  <div class="timerProgress"><div id="predictionTimerBar"></div></div>
+  <div class="controls" style="margin-top:9px;grid-template-columns:1fr 1fr">
+    <select id="expirySeconds">
+      <option value="3">3 seconds</option>
+      <option value="5" selected>5 seconds</option>
+      <option value="10">10 seconds</option>
+      <option value="15">15 seconds</option>
+    </select>
+    <button id="refreshPrediction" class="primary">🔄 NEW PREDICTION NOW</button>
+  </div>
+  <div class="note" style="margin-top:8px">When the countdown reaches 0.0s, this prediction expires and the analyzer requests a fresh one from the latest available ticks[span_8](start_span)[span_8](end_span).</div>
+</section>
+
+<section class="card"><h2>🧠 Phase 2–5: Core Analysis</h2><div class="grid5">
+<div class="box"><div class="label">Long support</div><div id="longP" class="big">—</div></div><div class="box"><div class="label">Recent support</div><div id="recentP" class="big">—</div></div><div class="box"><div class="label">Transition support</div><div id="transP" class="big">—</div></div><div class="box"><div class="label">Recent transition</div><div id="recentTransP" class="big">—</div></div><div class="box"><div class="label">Stability</div><div id="stability" class="big">—</div></div>
+</div><div id="confirmBadges" style="margin-top:7px"></div></section>
+
+<section class="card"><h2>🔢 Phase 1: Digit Distribution</h2><div id="distribution"></div></section>
+
+<section class="card"><h2>🔗 Phase 8–9: Matches Transition Lab</h2><div class="grid">
+<div class="box"><div class="label">Current digit</div><div id="currentTransition" class="big">—</div></div><div class="box"><div class="label">Candidate</div><div id="mlCandidate" class="big">—</div></div><div class="box"><div class="label">Transition confidence</div><div id="mlConfidence" class="big">WAIT</div></div><div class="box"><div class="label">Sequence stability</div><div id="sequenceStability" class="big">—</div></div>
+<div class="box"><div class="label">Repeat streak</div><div id="repeatStreak" class="big">—</div></div><div class="box"><div class="label">Score margin</div><div id="scoreMargin" class="big">—</div></div><div class="box"><div class="label">Lock state</div><div id="stableState" class="big">WAIT</div></div><div class="box"><div class="label">Lock cooldown</div><div id="cooldown" class="big">—</div></div>
+</div><div class="note" id="matchesNote">Matches is evaluated from digit-to-digit transitions, recent transitions, frequency and stability[span_9](start_span)[span_9](end_span).</div></section>
+
+<section class="card"><h2>⏱️ Phase 7: Signal Timing</h2><div class="grid">
+<div class="box"><div class="label">Signal state</div><div id="timingState" class="big">WAIT</div></div><div class="box"><div class="label">Timing window</div><div id="timingWindow" class="big">—</div></div><div class="box"><div class="label">Confidence band</div><div id="confidenceBand" class="big">—</div></div><div class="box"><div class="label">Cooldown</div><div id="timingCooldown" class="big">READY</div></div>
+</div></section>
+
+<section class="card"><h2>🧪 Phase 4–9: Forward Validation</h2><div class="grid">
+<div class="box"><div class="label">Historical tests</div><div id="tests" class="big">0</div></div><div class="box"><div class="label">READY tests</div><div id="readyTests" class="big">0</div></div><div class="box"><div class="label">1-tick</div><div id="hit1" class="big">—</div></div><div class="box"><div class="label">2-tick</div><div id="hit2" class="big">—</div></div><div class="box"><div class="label">3-tick</div><div id="hit3" class="big">—</div></div><div class="box"><div class="label">Matches hit</div><div id="matchHit" class="big">—</div></div><div class="box"><div class="label">Differs hit</div><div id="diffHit" class="big">—</div></div><div class="box"><div class="label">Even/Odd</div><div id="parityHit" class="big">—</div></div>
+</div><div class="note">Backtest uses chronological holdout logic: each prediction is generated only from ticks before its test point[span_10](start_span)[span_10](end_span).</div></section>
+
+<section class="card" id="predictionResultsCard">
+  <div class="sectionTitle">
+    <h2>📊 Prediction Results</h2>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button id="clearHistory" class="secondary" style="min-height:30px;padding:2px 8px;font-size:11px">CLEAR LOG</button>
+      <span id="resultStatus" class="badge">0 COMPLETED</span>
+    </div>
+  </div>
+  <div class="grid5" style="margin-top:10px">
+    <div class="box"><div class="label">Predictions</div><div id="resultN" class="big">0</div></div>
+    <div class="box"><div class="label">Hits</div><div id="resultHits" class="big">0</div></div>
+    <div class="box"><div class="label">Misses</div><div id="resultMisses" class="big">0</div></div>
+    <div class="box"><div class="label">Hit rate</div><div id="resultRate" class="big">—</div></div>
+    <div class="box"><div class="label">Avg model P</div><div id="resultAvgP" class="big">—</div></div>
+  </div>
+  <div class="note" style="margin-top:8px">A prediction is marked HIT when its candidate digit appears at least once during its timer window[span_11](start_span)[span_11](end_span).</div>
+  <div class="historyTable" style="margin-top:10px">
+    <table><thead><tr><th>Time</th><th>Prediction</th><th>Model P</th><th>Window</th><th>Result</th><th>Ticks</th></tr></thead><tbody id="resultHistory"></tbody></table>
+  </div>
+</section>
+
+<section class="card"><h2>📐 Phase 10: Calibration</h2><div class="grid"><div class="box"><div class="label">Signals</div><div id="sigN" class="big">0</div></div><div class="box"><div class="label">Completed</div><div id="sigDone" class="big">0</div></div><div class="box"><div class="label">Brier score</div><div id="brier" class="big">—</div></div><div class="box"><div class="label">Observed match</div><div id="observed" class="big">—</div></div></div><div id="calibration"></div></section>
+
+<section class="card"><h2>📜 Recent Signal Log</h2><div id="signalLog" class="note">No signals yet.</div></section>
+
+<section class="card" id="phase11Card">
+  <h2>🧠 Phase 11 — Adaptive Intelligence & Probability Trust</h2>
+  <div class="note">Raw model probability is separated from out-of-sample calibration[span_12](start_span)[span_12](end_span).</div>
+  <div class="grid5" style="margin-top:10px">
+    <div class="box"><div class="label">Candidate</div><div id="p11Candidate" class="big">—</div></div>
+    <div class="box"><div class="label">Raw model</div><div id="p11Raw" class="big">—</div></div>
+    <div class="box"><div class="label">Calibrated</div><div id="p11Cal" class="big">—</div></div>
+    <div class="box"><div class="label">OOS hits</div><div id="p11OOS" class="big">—</div></div>
+    <div class="box"><div class="label">Trust</div><div id="p11Trust" class="big">WAIT</div></div>
+  </div>
+  <div id="p11Explain" class="note" style="margin-top:10px">Waiting for out-of-sample observations[span_13](start_span)[span_13](end_span).</div>
+  <div style="overflow:auto;margin-top:10px">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr><th style="text-align:left;padding:6px;border-bottom:1px solid #243650">Digit</th><th>Raw P</th><th>Cal P</th><th>OOS</th><th>Baseline</th><th>Trust</th></tr></thead>
+      <tbody id="p11Table"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card" id="phase13Card">
+  <h2>🏁 Phase 13 — Model Competition & Dynamic Ensemble</h2>
+  <div class="note">Independent models compete on chronological out-of-sample results[span_14](start_span)[span_14](end_span).</div>
+  <div class="grid5" style="margin-top:10px">
+    <div class="box"><div class="label">Ensemble</div><div id="p13Candidate" class="big">—</div></div>
+    <div class="box"><div class="label">Raw P</div><div id="p13Raw" class="big">—</div></div>
+    <div class="box"><div class="label">Calibrated</div><div id="p13Cal" class="big">—</div></div>
+    <div class="box"><div class="label">OOS</div><div id="p13OOS" class="big">—</div></div>
+    <div class="box"><div class="label">Trust</div><div id="p13Trust" class="big">WAIT</div></div>
+  </div>
+  <div class="grid5" style="margin-top:10px">
+    <div class="box"><div class="label">Agreement</div><div id="p13Agreement" class="big">—</div></div>
+    <div class="box"><div class="label">Drift</div><div id="p13Drift" class="big">—</div></div>
+    <div class="box"><div class="label">Brier</div><div id="p13Brier" class="big">—</div></div>
+    <div class="box"><div class="label">Log loss</div><div id="p13LogLoss" class="big">—</div></div>
+    <div class="box"><div class="label">State</div><div id="p13State" class="big">WAIT</div></div>
+  </div>
+  <div id="p13Explain" class="note" style="margin-top:10px">Waiting for enough chronological data[span_15](start_span)[span_15](end_span).</div>
+  <div style="overflow:auto;margin-top:10px">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr><th style="text-align:left;padding:6px;border-bottom:1px solid #243650">Model</th><th>Weight</th><th>OOS N</th><th>Hit</th><th>Log loss</th><th>Brier</th><th>Status</th></tr></thead>
+      <tbody id="p13Table"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🧮 Manual Sequence Tester</h2>
+  <textarea id="manual" class="manual" placeholder="Paste digits: 1 6 3 5 7 8 8 3 5 9"></textarea>
+  <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+    <button id="manualRun" class="primary">ANALYZE SEQUENCE</button>
+    <button id="export" class="secondary">EXPORT CSV</button>
+    <button id="exportJSON" class="secondary">EXPORT JSON</button>
+  </div>
+  <div id="manualOut" class="note" style="margin-top:8px"></div>
+</section>
+
+<section class="card"><h2>🔧 Diagnostics</h2><div id="log" class="log"></div></section>
+
+<div class="note" style="padding:8px 2px">Phase 13 enhanced research build. State readiness indicates threshold compliance, not a guarantee[span_16](start_span)[span_16](end_span).</div>
+</main>
+<script>
+const ENDPOINTS=["wss://ws.binaryws.com/websockets/v3?app_id=1089","wss://api.derivws.com/trading/v1/options/ws/public","wss://ws.derivws.com/websockets/v3?app_id=1089"];
+const MAX=1000;
+const PIP={"1HZ10V":2,"1HZ25V":2,"1HZ50V":2,"1HZ75V":2,"1HZ100V":2};
+let ws=null,arr=[],seen=new Set(),endpointIndex=0,connectTimer=null,reconnectTimer=null,dataWatchTimer=null,manualMode=false;
+let signalEvents=[],signals=[],lastSignalKey="",lock={candidate:null,streak:0,locked:false,cooldown:0};
+let predictionCycle={active:false,candidate:null,prob:0,startedAt:0,expiresAt:0,duration:5000,manual:false};
+let predictionResults=[];
+let soundEnabled=true;
+let connectionGeneration=0;
+let pingTimer=null;
+
+const $=id=>document.getElementById(id);
+function log(s){$("log").innerHTML+="["+new Date().toLocaleTimeString()+"] "+s+"<br>";$("log").scrollTop=999999}
+function pct(x){return (100*x).toFixed(1)+"%"}
+
+// Sound synthesizer using Web Audio API
+function playTone(type){
+  if(!soundEnabled)return;
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    if(type==="hit"){
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, ctx.currentTime+0.1); // A5
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.3);
+      osc.start(); osc.stop(ctx.currentTime+0.3);
+    }else if(type==="miss"){
+      osc.frequency.setValueAtTime(300, ctx.currentTime);
+      osc.frequency.setValueAtTime(220, ctx.currentTime+0.15);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.35);
+      osc.start(); osc.stop(ctx.currentTime+0.35);
+    }else if(type==="ready"){
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.15);
+      osc.start(); osc.stop(ctx.currentTime+0.15);
+    }
+  }catch(e){}
 }
 
-html,
-body{
-  margin:0;
-  padding:0;
-  min-height:100%;
-  background:#07111f;
-  color:#f2f6ff;
-  font-family:Arial,Helvetica,sans-serif;
+function digitFromQuote(q){let s=String(q),m=s.match(/\.(\d+)/);return m?Number(m[1].slice(-1)):Number(s.replace(/\D/g,"").slice(-1))}
+function digitFromTick(t){const q=Number(t.quote);const pip=Number.isInteger(t.pip_size)?t.pip_size:(PIP[t.symbol]||PIP[$("symbol").value]||2);return Number(Math.abs(q).toFixed(pip).slice(-1))}
+function addTick(t){if(!t||t.quote==null)return;let q=Number(t.quote),e=Number(t.epoch||Date.now()/1000),d=digitFromTick(t),k=e+"|"+q;if(seen.has(k))return;seen.add(k);arr.push({quote:q,epoch:e,digit:d});if(arr.length>MAX)arr.shift();render()}
+function setStatus(t,c){$("status").textContent="● "+t;$("status").className="status "+c}
+function send(o){if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify(o))}
+
+function savePreferences(){
+  try{
+    localStorage.setItem("jm_symbol", $("symbol").value);
+    localStorage.setItem("jm_expiry", $("expirySeconds").value);
+    localStorage.setItem("jm_sound", soundEnabled);
+  }catch(e){}
+}
+function loadPreferences(){
+  try{
+    if(localStorage.getItem("jm_symbol")) $("symbol").value=localStorage.getItem("jm_symbol");
+    if(localStorage.getItem("jm_expiry")) $("expirySeconds").value=localStorage.getItem("jm_expiry");
+    if(localStorage.getItem("jm_sound")!==null){
+      soundEnabled=localStorage.getItem("jm_sound")==="true";
+      $("soundToggle").textContent=soundEnabled?"🔊 SOUND: ON":"🔇 SOUND: OFF";
+    }
+    if(localStorage.getItem("jm_predictions")){
+      predictionResults=JSON.parse(localStorage.getItem("jm_predictions"));
+      renderPredictionResults();
+    }
+  }catch(e){}
 }
 
-body{
-  min-height:100vh;
+function connect(){
+  stop(true);
+  arr=[];seen.clear();signalEvents=[];signals=[];lastSignalKey="";lock={candidate:null,streak:0,locked:false,cooldown:0};endpointIndex=0;manualMode=false;
+  setStatus("CONNECTING…","warn");log("Starting live Deriv connection with public app_id=1089[span_17](start_span)[span_17](end_span).");
+  connectionGeneration++;
+  openEndpoint(connectionGeneration);
 }
 
-button,
-select{
-  font:inherit;
+function openEndpoint(gen){
+ if(gen!==connectionGeneration)return;
+ if(endpointIndex>=ENDPOINTS.length){setStatus("OFFLINE","bad");log("All Deriv WebSocket endpoints failed or returned no tick data[span_18](start_span)[span_18](end_span).");return}
+ const url=ENDPOINTS[endpointIndex++];log("Opening endpoint "+url);let local;
+ try{local=new WebSocket(url)}catch(e){log("WebSocket constructor failed: "+e.message);setTimeout(()=>openEndpoint(gen),250);return}
+ ws=local;let opened=false,gotTick=false,failedData=false;
+ clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);
+ const fallback=()=>{if(gen!==connectionGeneration||ws!==local)return;if(gotTick)return;failedData=true;clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);try{local.onclose=null;local.close()}catch(e){}ws=null;setStatus("TRYING NEXT…","warn");log("No usable tick stream from this endpoint. Switching to next endpoint.");setTimeout(()=>openEndpoint(gen),250)};
+ connectTimer=setTimeout(()=>{if(ws===local&&!opened){log("Connection timeout after 10 seconds: "+url);fallback()}},10000);
+ local.onopen=()=>{if(gen!==connectionGeneration)return;opened=true;clearTimeout(connectTimer);setStatus("CONNECTED","warn");log("WebSocket handshake successful.");const sym=$("symbol").value;try{local.send(JSON.stringify({ping:1,req_id:1}))}catch(e){}try{local.send(JSON.stringify({ticks:sym,subscribe:1,req_id:102}))}catch(e){log("Tick subscription send failed: "+e.message);fallback();return}try{local.send(JSON.stringify({ticks_history:sym,count:Math.min(MAX,500),end:"latest",style:"ticks",req_id:101}))}catch(e){log("History request unavailable: "+e.message)}log("Subscribed to "+sym+"; waiting for live ticks.");dataWatchTimer=setTimeout(()=>{if(ws===local&&!gotTick)fallback()},7000);pingTimer=setInterval(()=>{if(ws===local&&local.readyState===WebSocket.OPEN){try{local.send(JSON.stringify({ping:1,req_id:Date.now()%1000000}))}catch(e){}}},30000)};
+ local.onmessage=e=>{if(ws!==local||gen!==connectionGeneration)return;let m;try{m=JSON.parse(e.data)}catch(err){log("Bad JSON message from Deriv");return}if(m.msg_type==="ping")return;if(m.history?.prices){let p=m.history.prices,t=m.history.times||[];log("History received: "+p.length+" ticks.");p.forEach((q,i)=>addTick({quote:q,epoch:t[i]}));runBacktest()}if(m.tick)addTick(m.tick)};
+ local.onerror=()=>{if(ws===local){log("WebSocket transport error on current endpoint.");if(!gotTick)fallback()}};
+ local.onclose=e=>{if(gen!==connectionGeneration||ws!==local)return;clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);ws=null;if(failedData)return;log("Closed code="+e.code+" reason="+(e.reason||"none"));if(!opened){setStatus("RETRYING…","warn");setTimeout(()=>openEndpoint(gen),500)}else{setStatus("RECONNECTING…","warn");reconnectTimer=setTimeout(()=>{if(!ws)openEndpoint(gen)},1500)}};
 }
 
-.app{
-  width:100%;
-  max-width:1150px;
-  margin:0 auto;
-  padding:16px;
+function stop(silent){
+  connectionGeneration++;
+  clearTimeout(connectTimer);clearTimeout(reconnectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);
+  if(ws){try{ws.onclose=null;ws.close()}catch(e){}}ws=null;if(!silent)setStatus("OFFLINE","off");
 }
 
-header{
-  background:#0d1a2b;
-  border:1px solid #203552;
-  border-radius:14px;
-  padding:18px;
-  margin-bottom:14px;
-}
+function counts(a){let c=Array(10).fill(0);a.forEach(x=>c[x.digit]++);return c}
+function entropy(c,n){let h=0;c.forEach(v=>{if(v){let p=v/n;h-=p*Math.log2(p)}});return h/Math.log2(10)}
 
-.logo{
-  font-size:25px;
-  font-weight:800;
-}
-
-.subtitle{
-  color:#91a5bf;
-  font-size:13px;
-  margin-top:5px;
-}
-
-.status{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  background:#0d1a2b;
-  border:1px solid #203552;
-  border-radius:10px;
-  padding:13px;
-  margin-bottom:14px;
-  font-size:14px;
-}
-
-.status-dot{
-  width:11px;
-  height:11px;
-  border-radius:50%;
-  background:#ff5555;
-  flex:none;
-}
-
-.controls{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-bottom:14px;
-}
-
-select,
-button{
-  min-height:48px;
-  width:100%;
-  border-radius:9px;
-  border:1px solid #294361;
-  background:#111f33;
-  color:#fff;
-  padding:10px 12px;
-}
-
-button{
-  font-weight:700;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#172b45;
-}
-
-.connect{
-  border-color:#2e8b5b;
-}
-
-.stop{
-  border-color:#934747;
-}
-
-.clear{
-  border-color:#80672b;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:14px;
-}
-
-.card{
-  background:#0d1a2b;
-  border:1px solid #203552;
-  border-radius:12px;
-  padding:15px;
-}
-
-.label{
-  color:#8298b3;
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.5px;
-  margin-bottom:7px;
-}
-
-.value{
-  font-size:24px;
-  font-weight:800;
-  word-break:break-word;
-}
-
-.green{
-  color:#45e68b;
-}
-
-.red{
-  color:#ff6666;
-}
-
-.yellow{
-  color:#ffd166;
-}
-
-.blue{
-  color:#63b3ff;
-}
-
-.section-title{
-  font-size:17px;
-  font-weight:800;
-  margin:18px 0 9px;
-}
-
-.signal{
-  text-align:center;
-  background:#0d1a2b;
-  border:1px solid #294361;
-  border-radius:12px;
-  padding:22px;
-}
-
-.signal-name{
-  font-size:25px;
-  font-weight:800;
-}
-
-.signal-confidence{
-  font-size:36px;
-  font-weight:800;
-  margin-top:7px;
-}
-
-.signal-detail{
-  color:#8fa4bf;
-  font-size:13px;
-  margin-top:8px;
-}
-
-.digits{
-  display:grid;
-  grid-template-columns:repeat(10,1fr);
-  gap:6px;
-}
-
-.digit{
-  background:#101f33;
-  border:1px solid #243c59;
-  border-radius:8px;
-  text-align:center;
-  padding:10px 3px;
-}
-
-.digit-number{
-  font-size:18px;
-  font-weight:800;
-}
-
-.digit-percent{
-  color:#8da2bd;
-  font-size:11px;
-  margin-top:3px;
-}
-
-.history{
-  display:flex;
-  flex-wrap:wrap;
-  gap:5px;
-  max-height:170px;
-  overflow:auto;
-}
-
-.history-item{
-  width:32px;
-  height:32px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#16263c;
-  border:1px solid #29405d;
-  border-radius:6px;
-  font-weight:800;
-}
-
-.diagnostics{
-  background:#050a11;
-  border:1px solid #21344e;
-  border-radius:10px;
-  padding:12px;
-  min-height:130px;
-  max-height:300px;
-  overflow:auto;
-  font-family:monospace;
-  font-size:12px;
-  line-height:1.5;
-  white-space:pre-wrap;
-}
-
-.error-box{
-  display:none;
-  background:#2a1013;
-  border:1px solid #8d3c44;
-  color:#ffb4b9;
-  border-radius:10px;
-  padding:13px;
-  margin-bottom:14px;
-  font-family:monospace;
-  font-size:12px;
-  white-space:pre-wrap;
-}
-
-.footer{
-  text-align:center;
-  color:#71859f;
-  font-size:12px;
-  padding:24px 0 10px;
-}
-
-@media(max-width:700px){
-
-  .app{
-    padding:10px;
+function model(a){
+  if(a.length<30)return null;
+  const n=a.length,r=a.slice(-Number($("recent").value)),l=a.slice(-Math.min(300,n));
+  const lc=counts(l),rc=counts(r),cur=a[n-1].digit;
+  let trans=Array(10).fill(0),recentTrans=Array(10).fill(0),tt=0,rt=0;
+  for(let i=1;i<n;i++)if(a[i-1].digit===cur){tt++;trans[a[i].digit]++}
+  for(let i=Math.max(1,n-r.length);i<n;i++)if(a[i-1].digit===cur){rt++;recentTrans[a[i].digit]++}
+  let probs=Array(10).fill(0);
+  for(let d=0;d<10;d++){
+    let lp=(lc[d]+1)/(l.length+10),rp=(rc[d]+1)/(r.length+10),tp=(trans[d]+1)/(tt+10);
+    probs[d]=.30*lp+.25*rp+.45*tp;
   }
+  let sum=probs.reduce((a,b)=>a+b,0);probs=probs.map(x=>x/sum);
+  let sorted=probs.map((p,d)=>({d,p})).sort((a,b)=>b.p-a.p),best=sorted[0],second=sorted[1];
+  let recentA=a.slice(-Math.min(50,n)),recentB=a.slice(-Math.min(100,n),-Math.min(50,n));
+  let stability=1-Math.abs(counts(recentA).reduce((s,v,i)=>s+Math.abs(v/recentA.length-(counts(recentB.length?recentB:recentA)[i]/(recentB.length||recentA.length))),0))/2;
+  let margin=best.p-second.p;
+  let longP=(lc[best.d]+1)/(l.length+10),recentP=(rc[best.d]+1)/(r.length+10),transP=(trans[best.d]+1)/(tt+10),recentTransP=(recentTrans[best.d]+1)/(rt+10);
+  let confirmations=[best.p>=.16,best.p-.1>=.05,transP>=.14,recentP>=.12,stability>=.55,margin>=.025,tt>=10];
+  let conf=confirmations.filter(Boolean).length;
+  let state=a.length>=80&&conf>=5&&best.p>=.16&&margin>=.025?"READY":a.length>=50&&conf>=3?"WATCH":"WAIT";
+  return {probs,best,second,cur,longP,recentP,transP,recentTransP,stability,margin,confirmations,conf,state,tt,rt,lc,rc,l,r};
+}
 
-  .controls{
-    grid-template-columns:1fr;
+function updateLock(m){
+  if(!m)return;let c=m.best.d;
+  if(c===lock.candidate)lock.streak++;
+  else{lock.candidate=c;lock.streak=1;lock.locked=false;lock.cooldown=0}
+  if(!lock.locked&&m.state==="READY"&&lock.streak>=3){
+    lock.locked=true;lock.cooldown=3;playTone("ready");
+  }else if(lock.locked){
+    lock.cooldown--;if(lock.cooldown<=0){lock.locked=false;lock.cooldown=0}
   }
+}
 
-  .grid{
-    grid-template-columns:repeat(2,1fr);
+function classify(m){
+  if(!m)return {match:"WAIT",range:"WAIT",parity:"WAIT"};
+  let d=m.best.d,mp=m.best.p;
+  let match=mp>=.16?"MATCH "+d:mp>=.12?"WATCH MATCH "+d:"WAIT";
+  let diff=1-mp;
+  let rangeP=m.probs.slice(5).reduce((a,b)=>a+b,0),parityP=m.probs.filter((_,d)=>d%2===0).reduce((a,b)=>a+b,0);
+  return {match,matchP:mp,diffP:diff,rangeP,range:rangeP>=.58?"OVER 5":rangeP<=.42?"UNDER 5":"WAIT",parityP,parity:parityP>=.58?"EVEN":parityP<=.42?"ODD":"WAIT"}
+}
+
+function predictionDuration(){return Number($("expirySeconds")?.value||5)*1000;}
+
+function recordPredictionResult(){
+  if(!predictionCycle.active||!arr.length)return;
+  const start=predictionCycle.startedAt/1000, end=Math.min(predictionCycle.expiresAt/1000, Number(arr[arr.length-1].epoch));
+  const windowTicks=arr.filter(t=>Number(t.epoch)>start&&Number(t.epoch)<=end);
+  if(!windowTicks.length)return;
+  const hitIndex=windowTicks.findIndex(t=>t.digit===predictionCycle.candidate);
+  const hit=hitIndex>=0;
+  if(hit) playTone("hit"); else playTone("miss");
+  predictionResults.unshift({time:predictionCycle.startedAt,candidate:predictionCycle.candidate,prob:predictionCycle.prob,duration:predictionCycle.duration/1000,result:hit?'HIT':'MISS',ticks:windowTicks.length,firstHit:hit?hitIndex+1:null});
+  predictionResults=predictionResults.slice(0,100);
+  try{ localStorage.setItem("jm_predictions", JSON.stringify(predictionResults)); }catch(e){}
+  renderPredictionResults();
+  log('Prediction MATCH '+predictionCycle.candidate+' '+(hit?'HIT':'MISS')+' — '+windowTicks.length+' ticks observed[span_19](start_span)[span_19](end_span).');
+}
+
+function renderPredictionResults(){
+  const n=predictionResults.length,h=predictionResults.filter(x=>x.result==='HIT').length,mi=n-h,rate=n?h/n:0,avg=n?predictionResults.reduce((s,x)=>s+x.prob,0)/n:0;
+  if($('resultN'))$('resultN').textContent=n;$('resultHits').textContent=h;$('resultMisses').textContent=mi;$('resultRate').textContent=n?pct(rate):'—';$('resultAvgP').textContent=n?pct(avg):'—';$('resultStatus').textContent=n+' COMPLETED';
+  if($('resultHistory'))$('resultHistory').innerHTML=predictionResults.map(x=>'<tr><td>'+new Date(x.time).toLocaleTimeString()+'</td><td><b>MATCH '+x.candidate+'</b></td><td>'+pct(x.prob)+'</td><td>'+x.duration+'s</td><td class="'+(x.result==='HIT'?'resultHit':'resultMiss')+'">'+x.result+'</td><td>'+x.ticks+(x.firstHit?' · hit #'+x.firstHit:'')+'</td></tr>').join('')||'<tr><td colspan="6" class="note">No completed predictions yet[span_20](start_span)[span_20](end_span).</td></tr>';
+}
+
+function clearPrediction(reason="expired"){
+  predictionCycle={active:false,candidate:null,prob:0,startedAt:0,expiresAt:0,duration:predictionDuration(),manual:false};
+  if($("predictionStatus")){$("predictionStatus").textContent=reason.toUpperCase();$("predictionTimerLabel").textContent="WAIT FOR FRESH PREDICTION";$("predictionTimer").textContent="—";$("predictionTimerBar").style.width="0%";}
+}
+
+function startPrediction(m,x,c,force=false){
+  if(!m||!x||!c)return;if(!force&&predictionCycle.active)return;
+  const now=Date.now(),dur=predictionDuration();
+  predictionCycle={active:true,candidate:m.best.d,prob:m.best.p,startedAt:now,expiresAt:now+dur,duration:dur,manual:false};
+  if($("predictionStatus"))$("predictionStatus").textContent="ACTIVE";
+  $("predictionTimerLabel").textContent="MATCH "+m.best.d+" · "+pct(m.best.p);
+}
+
+function refreshPredictionNow(){
+  if(!arr.length){log("Need live ticks before creating a prediction.");return;}
+  const m=p13Primary(arr)||model(arr);if(!m){log("Not enough data for a fresh prediction.");return;}
+  const c=classify(m);startPrediction(m,arr[arr.length-1],c,true);
+  log("Fresh P13 ensemble prediction started: MATCH "+m.best.d+" at "+pct(m.best.p)+" for "+(predictionDuration()/1000)+"s.");
+}
+
+function updatePredictionTimer(){
+  if(!$("predictionTimer"))return;if(!predictionCycle.active){$("predictionTimer").textContent="—";return;}
+  const left=Math.max(0,predictionCycle.expiresAt-Date.now());
+  const sec=(left/1000).toFixed(1)+"s";$("predictionTimer").textContent=sec;
+  $("predictionTimerBar").style.width=Math.max(0,Math.min(100,left/predictionCycle.duration*100))+"%";
+  if(left<=0){
+    const old=predictionCycle.candidate;recordPredictionResult();clearPrediction("EXPIRED");
+    log("Prediction MATCH "+old+" expired — retrieving fresh prediction.");
+    if(arr.length>=30){setTimeout(()=>refreshPredictionNow(),80);}
   }
+}
 
-  .digits{
-   
+function render(){
+  $("count").textContent=arr.length;if(!arr.length)return;
+  let x=arr[arr.length-1],m=model(arr);
+  $("cur").textContent=x.digit;$("quote").textContent=x.quote;$("pip").textContent=PIP[$("symbol").value]||2;
+  if(!m){$("engineState").textContent="BUILDING";return}
+  updateLock(m);let c=classify(m);
+  $("candidate").textContent=m.best.d;$("candidateReason").textContent="Current digit "+m.cur+" · transition samples "+m.tt;
+  $("modelProb").textContent=pct(m.best.p);$("confirm").textContent=m.conf+"/7";
+  $("lock").textContent=lock.locked?"ON":"OFF";$("lockDetail").textContent=lock.locked?lock.cooldown+" ticks remaining":"streak "+lock.streak+"/3[span_21](start_span)[span_21](end_span)";
+  $("engineState").textContent=m.state;$("longP").textContent=pct(m.longP);$("recentP").textContent=pct(m.recentP);
+  $("transP").textContent=pct(m.transP);$("recentTransP").textContent=pct(m.recentTransP);$("stability").textContent=pct(m.stability);
+  $("currentTransition").textContent=m.cur+" → "+m.best.d;$("mlCandidate").textContent=m.best.d;$("mlConfidence").textContent=m.state;
+  $("sequenceStability").textContent=m.confirmations.filter(Boolean).length+"/7";$("repeatStreak").textContent=lock.streak;
+  $("scoreMargin").textContent=pct(m.margin);$("stableState").textContent=lock.locked?"LOCKED":m.state;
+  $("cooldown").textContent=lock.locked?lock.cooldown+" ticks":"—";$("timingState").textContent=m.state;
+  $("timingWindow").textContent=m.state==="READY"?"NEXT TICK":"WAIT";$("confidenceBand").textContent=m.best.p>=.2?"HIGH":m.best.p>=.15?"MEDIUM":"LOW";
+  $("timingCooldown").textContent=lock.locked?lock.cooldown+" ticks":"READY";
+
+  setCard("matchCard",m.state);setCard("rangeCard",m.state);setCard("parityCard",m.state);
+  $("matchMain").textContent=c.match;$("matchDetail").textContent="Matches "+pct(c.matchP)+" · Differs "+pct(c.diffP);
+  $("matchMeter").style.width=Math.min(100,c.matchP*100)+"%";
+  $("rangeMain").textContent=c.range;$("rangeDetail").textContent="Over 5 "+pct(c.rangeP)+" · Under 5 "+pct(1-c.rangeP);
+  $("rangeMeter").style.width=(c.rangeP*100)+"%";
+  $("parityMain").textContent=c.parity;$("parityDetail").textContent="Even "+pct(c.parityP)+" · Odd "+pct(1-c.parityP);
+  $("parityMeter").style.width=(c.parityP*100)+"%";
+  $("confirmBadges").innerHTML=m.confirmations.map((v,i)=>'<span class="badge">'+(v?'✓':'×')+' C'+(i+1)+'</span>').join('');
+  let cc=counts(arr.slice(-Math.min(100,arr.length)));
+  $("distribution").innerHTML=cc.map((v,d)=>{let p=v/Math.min(100,arr.length);return '<div style="display:grid;grid-template-columns:24px 1fr 55px;gap:7px;margin:5px 0"><b>'+d+'</b><div class="bar"><div class="fill" style="width:'+(p*100)+'%"></div></div><span>'+pct(p)+'</span></div>'}).join('');
+  if(m.state==="READY"){emitSignal(m,x,c)}
+  const p13=p13Primary(arr);
+  if(p13){
+    const pc=classify(p13);
+    if((p13.state==="READY"||p13.state==="WATCH")&&pc.match!=="WAIT"&&!predictionCycle.active)startPrediction(p13,x,pc,false);
+  }else if((m.state==="READY"||m.state==="WATCH")&&c.match!=="WAIT"&&!predictionCycle.active)startPrediction(m,x,c,false);
+}
+
+function setCard(id,state){$(id).className="signal "+(state==="READY"?"ready":state==="WATCH"?"watch":"wait")}
+function emitSignal(m,x,c){
+  let key=x.epoch+"|"+m.best.d;if(key===lastSignalKey)return;lastSignalKey=key;
+  let ev={time:x.epoch,candidate:m.best.d,prob:m.best.p,agreement:m.conf,actual:null,done:false,w1:false,w2:false,w3:false,matchP:c.matchP,rangeP:c.rangeP,parityP:c.parityP};
+  signalEvents.push(ev);signals.unshift(ev);signals=signals.slice(0,30);$("sigN").textContent=signalEvents.length;renderSignalLog();
+}
+
+function validateLive(){
+  for(const ev of signalEvents.filter(x=>!x.done)){
+    let idx=arr.findIndex(x=>x.epoch>ev.time);if(idx<0)continue;
+    let actual=arr[idx].digit;ev.actual=actual;ev.w1=actual===ev.candidate;
+    ev.w2=ev.w1||(arr[idx+1]&&arr[idx+1].digit===ev.candidate);
+    ev.w3=ev.w2||(arr[idx+2]&&arr[idx+2].digit===ev.candidate);ev.done=true;
+  }
+  let d=signalEvents.filter(x=>x.done);
+  $("sigDone").textContent=d.length;$("observed").textContent=d.length?pct(d.filter(x=>x.w1).length/d.length):"—";
+  $("brier").textContent=d.length?((d.reduce((s,x)=>s+Math.pow(x.prob-(x.w1?1:0),2),0)/d.length).toFixed(4)):"—";
+}
+
+function renderSignalLog(){
+  let d=signals;$("signalLog").innerHTML=d.length?d.map(x=>'<div style="padding:6px 0;border-bottom:1px solid #1d2b40"><b>READY</b> · candidate '+x.candidate+' · '+pct(x.prob)+' · '+x.agreement+'/7 · '+new Date(x.time*1000).toLocaleTimeString()+(x.done?' · '+(x.w3?'HIT':'MISS'):' · pending')+'</div>').join(''):"No signals yet[span_22](start_span)[span_22](end_span).";
+}
+
+function runBacktest(){
+  if(arr.length<120){log("Backtest needs at least 120 ticks.");return}
+  let T=[];let start=Math.max(80,arr.length-900);
+  for(let i=start;i<arr.length-3;i++){
+    let a=arr.slice(0,i),m=model(a);if(!m)continue;
+    let actual=arr[i].digit;let one=actual===m.best.d;
+    let two=one||(arr[i+1]&&arr[i+1].digit===m.best.d);
+    let three=two||(arr[i+2]&&arr[i+2].digit===m.best.d);
+    let parity=(actual%2)===(m.best.d%2),range=(actual>=5)===(m.best.d>=5),match=one,diff=!one;
+    T.push({m,one,two,three,parity,range,match,diff});
+  }
+  let p=n=>T.length?100*T.filter(n).length/T.length:0;
+  $("tests").textContent=T.length;let R=T.filter(x=>x.m.state==="READY");$("readyTests").textContent=R.length;
+  $("hit1").textContent=p(x=>x.one).toFixed(1)+"%";$("hit2").textContent=p(x=>x.two).toFixed(1)+"%";$("hit3").textContent=p(x=>x.three).toFixed(1)+"%";
+  $("matchHit").textContent=p(x=>x.match).toFixed(1)+"%";$("diffHit").textContent=p(x=>x.diff).toFixed(1)+"%";$("parityHit").textContent=p(x=>x.parity).toFixed(1)+"%";
+  log("Backtest complete: "+T.length+" chronological tests.");renderCalibration(T);
+}
+
+function renderCalibration(T){
+  let bands=[[.10,.15],[.15,.20],[.20,.25],[.25,.30],[.30,.40],[.40,1]];
+  let html='<table><thead><tr><th>Probability band</th><th>Tests</th><th>Observed 1T</th></tr></thead><tbody>';
+  for(const [lo,hi] of bands){
+    let z=T.filter(x=>x.m.best.p>=lo&&x.m.best.p<hi);
+    let hit=z.length?z.filter(x=>x.one).length/z.length:null;
+    html+='<tr><td>'+pct(lo)+'–'+pct(hi)+'</td><td>'+z.length+'</td><td>'+(hit==null?'—':pct(hit))+'</td></tr>';
+  }
+  html+='</tbody></table>';$("calibration").innerHTML=html;
+}
+
+function analyzeManual(){
+  let a=$("manual").value.split(/[^0-9]+/).filter(Boolean).map(Number).filter(n=>n>=0&&n<=9).map((d,i)=>({digit:d,quote:d,epoch:i}));
+  if(a.length<30){$("manualOut").textContent="Enter at least 30 digits.";return}
+  let m=model(a),c=classify(m);
+  $("manualOut").innerHTML='Candidate: <b>'+m.best.d+'</b> · Model '+pct(m.best.p)+' · State <b>'+m.state+'</b><br>Matches: <b>'+c.match+'</b> · '+pct(c.matchP)+' · '+pct(c.diffP)+' differs<br>Range: <b>'+c.range+'</b> · '+pct(c.rangeP)+' over<br>Parity: <b>'+c.parity+'</b> · '+pct(c.parityP)+' even<br>Confirmations: '+m.conf+'/7';
+}
+
+/* Phase 13: Model Competition & Dynamic Ensemble */
+const p13Cache={key:"",data:null};
+function p13Norm(p){let z=p.reduce((a,b)=>a+b,0);return z?p.map(x=>x/z):Array(10).fill(.1)}
+function p13Freq(a,window){const ds=a.slice(-Math.min(window,a.length)).map(x=>x.digit);return p11Build(ds,1)}
+function p13Recent(a){return p13Freq(a,50)}
+function p13Markov(a,order){return p11Transition(a.map(x=>x.digit),order,1)}
+function p13Streak(a){
+  const ds=a.map(x=>x.digit),p=Array(10).fill(.1);if(!ds.length)return p;
+  const cur=ds[ds.length-1],same=[];
+  for(let i=ds.length-1;i>=0&&same.length<80;i--){if(ds[i]===cur)same.push(ds[i]);else break}
+  const base=p13Markov(a,1);const out=base.slice();
+  if(same.length>=2){out[cur]*=1+Math.min(.45,same.length*.06);for(let d=0;d<10;d++)if(d!==cur)out[d]*=(1-Math.min(.10,same.length*.012))}
+  return p13Norm(out);
+}
+const P13_MODELS=[
+ {id:"freq",name:"Smoothed frequency",fn:a=>p13Freq(a,300)},
+ {id:"recent",name:"Recent frequency",fn:a=>p13Recent(a)},
+ {id:"markov1",name:"Markov order 1",fn:a=>p13Markov(a,1)},
+ {id:"markov2",name:"Markov order 2",fn:a=>p13Markov(a,2)},
+ {id:"markov3",name:"Markov order 3",fn:a=>p13Markov(a,3)},
+ {id:"streak",name:"Streak-aware",fn:a=>p13Streak(a)}
+];
+function p13Metrics(preds){
+  let n=preds.length,h=0,ll=0,b=0;
+  preds.forEach(x=>{
+    const q=Math.max(1e-6,Math.min(1-1e-6,x.p[x.actual]));ll-=Math.log(q);
+    h+=x.best===x.actual?1:0;let br=0;for(let d=0;d<10;d++)br+=Math.pow(x.p[d]-(x.actual===d?1:0),2);b+=br;
+  });
+  return {n,hit:n?h/n:0,logLoss:n?ll/n:Infinity,brier:n?b/n:Infinity}
+}
+function p13ModelAt(a){const out={};P13_MODELS.forEach(m=>out[m.id]=p13Norm(m.fn(a)));return out}
+function p13WalkForward(ds){
+ const start=Math.max(80,ds.length>700?ds.length-700:80);
+ const rows={}; P13_MODELS.forEach(m=>rows[m.id]=[]);
+ const acc={}; P13_MODELS.forEach(m=>acc[m.id]=[]);
+ const ensRows=[];
+ for(let i=start;i<ds.length;i++){
+   const hist=ds.slice(0,i), actual=ds[i].digit, ps=p13ModelAt(hist);
+   const priorMetrics={}; P13_MODELS.forEach(m=>priorMetrics[m.id]=p13Metrics(acc[m.id]));
+   const weights=p13Softmax(priorMetrics);
+   const ep=Array(10).fill(0);
+   P13_MODELS.forEach((m,j)=>{const p=ps[m.id],best=p.indexOf(Math.max(...p));rows[m.id].push({p,best,actual});acc[m.id].push({p,best,actual});for(let d=0;d<10;d++)ep[d]+=weights[j]*p[d]});
+   ensRows.push({p:ep,actual,best:ep.indexOf(Math.max(...ep))});
+ }
+ const metrics={}; P13_MODELS.forEach(m=>metrics[m.id]=p13Metrics(rows[m.id]));
+ return {rows,metrics,ensemble:ensRows};
+}
+function p13Softmax(metrics){
+  const ids=P13_MODELS.map(m=>m.id),raw=ids.map(id=>{const x=metrics[id];if(!x||x.n<20)return 0;return Math.exp(-Math.min(8,x.logLoss))});
+  let z=raw.reduce((a,b)=>a+b,0);if(!z)return ids.map(()=>1/ids.length);
+  let w=raw.map(x=>x/z);const ns=ids.map(id=>metrics[id]?.n||0).filter(n=>n>0);
+  const minN=ns.length?Math.min(...ns):0;
+  const shrink=Math.min(.75,Math.max(0,1-Math.min(1,minN/120)));
+  return w.map(x=>(1-shrink)*x+shrink/ids.length);
+}
+function p13Current(ds){
+ if(ds.length<80)return null;
+ const wf=p13WalkForward(ds),weights=p13Softmax(wf.metrics),ps=p13ModelAt(ds),ens=Array(10).fill(0);
+ P13_MODELS.forEach((m,i)=>{for(let d=0;d<10;d++)ens[d]+=weights[i]*ps[m.id][d]});
+ const best=ens.indexOf(Math.max(...ens));
+ const topVotes=P13_MODELS.reduce((n,m)=>n+(ps[m.id].indexOf(Math.max(...ps[m.id]))===best?1:0),0);
+ const agreement=topVotes/P13_MODELS.length;
+ const recent=ds.slice(-120),older=ds.slice(-240,-120);
+ const rc=counts(recent.map(x=>x.digit)),oc=counts(older.map(x=>x.digit));
+ const drift=older.length?Math.abs((rc[best]/recent.length)-(oc[best]/older.length)):0;
+ const ensembleOOS=wf.ensemble, em=p13Metrics(ensembleOOS);
+ const hits=ensembleOOS.filter(x=>x.best===best),calN=hits.length,calH=hits.filter(x=>x.actual===best).length;
+ const cal=calN>=10?(calH+1)/(calN+2):ens[best],ci=p11Wilson(calH,calN);
+ let trust="WAIT";
+ if(calN>=30&&cal>0.10&&ci[0]>0.10&&agreement>=.5&&drift<.15)trust=calN>=80?"HIGH":"MEDIUM";
+ else if(calN>=30)trust="WATCH";
+ const state=trust==="HIGH"?"READY":trust==="MEDIUM"?"WATCH":"WAIT";
+ return {ens,best,weights,metrics:wf.metrics,agreement,drift,em,calN,calH,cal,ci,trust,state,ps};
+}
+
+function p13Render(ds){
+  if(ds.length<80)return;
+  const key=String(ds.length)+"|"+String(ds[ds.length-1]?.epoch||"")+"|"+String(ds[ds.length-1]?.quote||"")+"|"+String($("recent")?.value||"");
+  if(p13Cache.key===key)return;
+  const x=p13Current(ds);if(!x)return;p13Cache.key=key;p13Cache.data=x;
+  const el=id=>$(id);
+  el("p13Candidate").textContent="MATCH "+x.best;el("p13Raw").textContent=pct(x.ens[x.best]);el("p13Cal").textContent=pct(x.cal);
+  el("p13OOS").textContent=x.calH+"/"+x.calN;el("p13Trust").textContent=x.trust;el("p13Agreement").textContent=pct(x.agreement);
+  el("p13Drift").textContent=pct(x.drift);el("p13Brier").textContent=isFinite(x.em.brier)?x.em.brier.toFixed(4):"—";
+  el("p13LogLoss").textContent=isFinite(x.em.logLoss)?x.em.logLoss.toFixed(3):"—";el("p13State").textContent=x.state;
+  el("p13Explain").textContent="Dynamic weights use prior OOS log loss with shrinkage toward equal weights[span_23](start_span)[span_23](end_span). 95% Wilson interval: "+(x.ci[0]*100).toFixed(1)+"–"+(x.ci[1]*100).toFixed(1)+"%.";
+  el("p13Table").innerHTML=P13_MODELS.map((m,i)=>{
+    const z=x.metrics[m.id],w=x.weights[i],st=z.n<30?"WAIT":z.hit>=.15?"ACTIVE":"WEAK";
+    return '<tr><td style="padding:6px;border-bottom:1px solid #182438"><b>'+m.name+'</b></td><td style="text-align:center">'+(w*100).toFixed(1)+'%</td><td style="text-align:center">'+z.n+'</td><td style="text-align:center">'+(z.hit*100).toFixed(1)+'%</td><td style="text-align:center">'+(isFinite(z.logLoss)?z.logLoss.toFixed(3):"—")+'</td><td style="text-align:center">'+(isFinite(z.brier)?z.brier.toFixed(4):"—")+'</td><td style="text-align:center">'+st+'</td></tr>';
+  }).join('');
+}
+function p13Primary(ds){const x=p13Cache.data||p13Current(ds);if(!x)return null;return {best:{d:x.best,p:x.ens[x.best]},probs:x.ens,state:x.state,cal:x.cal,trust:x.trust,agreement:x.agreement,drift:x.drift,version:"P13"}}
+
+function p11Clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+function p11Wilson(h,n){if(!n)return [0,1];const z=1.96,p=h/n,den=1+z*z/n,ctr=p+z*z/(2*n),rad=z*Math.sqrt((p*(1-p)+z*z/(4*n))/n);return [p11Clamp((ctr-rad)/den,0,1),p11Clamp((ctr+rad)/den,0,1)];}
+function p11Build(ds,alpha=1){const c=Array(10).fill(0);ds.forEach(d=>{if(Number.isInteger(d)&&d>=0&&d<10)c[d]++});const n=ds.length;return c.map(x=>(x+alpha)/(n+10*alpha));}
+function p11Transition(ds,order=1,alpha=1){
+  const counts={};
+  for(let i=order;i<ds.length;i++){const k=ds.slice(i-order,i).join('');if(!counts[k])counts[k]=Array(10).fill(0);counts[k][ds[i]]++;}
+  const ctx=ds.slice(-order).join('');const a=counts[ctx]||Array(10).fill(0);const n=a.reduce((x,y)=>x+y,0);
+  return a.map(x=>(x+alpha)/(n+10*alpha));
+}
+function p11Model(ds){
+  const long=p11Build(ds.slice(-Math.min(ds.length,1000)),1);
+  const recent=p11Build(ds.slice(-Math.min(ds.length,120)),1);
+  const t1=p11Transition(ds,1,1),t2=p11Transition(ds,2,1),t3=p11Transition(ds,3,1);
+  const w=[.22,.18,.25,.20,.15];const p=Array(10).fill(0);
+  for(let d=0;d<10;d++)p[d]=w[0]*long[d]+w[1]*recent[d]+w[2]*t1[d]+w[3]*t2[d]+w[4]*t3[d];
+  let best=0;for(let d=1;d<10;d++)if(p[d]>p[best])best=d;
+  return {p,best};
+}
+function p11Trust(n,cal,raw,lo,baseline){if(n<30)return 'WAIT';if(n<60)return 'WATCH';if(cal-baseline<=0)return 'LOW';if(lo>baseline && Math.abs(cal-raw)<.12)return 'HIGH';return 'MEDIUM';}
+function p11Evaluate(ds){
+  const rows=[];for(let d=0;d<10;d++)rows.push({d,n:0,h:0,preds:[]});
+  for(let i=80;i<ds.length-1;i++){
+    const m=p11Model(ds.slice(0,i));const actual=ds[i];
+    for(let d=0;d<10;d++){if(m.p[d]>=.20){rows[d].n++;if(actual===d)rows[d].h++;rows[d].preds.push(m.p[d]);}}
+  }
+  return rows;
+}
+function p11Render(ds){
+  const m=p11Model(ds);const rows=p11Evaluate(ds);const r=rows[m.best];
+  const raw=m.p[m.best];const cal=r&&r.n>=10 ? (r.h+1)/(r.n+2) : raw;
+  const ci=p11Wilson(r?.h||0,r?.n||0);const trust=p11Trust(r?.n||0,cal,raw,ci[0],.10);
+  if(document.getElementById('p11Candidate')){
+    p11Candidate.textContent='MATCH '+m.best;p11Raw.textContent=(raw*100).toFixed(1)+'%';p11Cal.textContent=(cal*100).toFixed(1)+'%';
+    p11OOS.textContent=(r?.h||0)+'/'+(r?.n||0);p11Trust.textContent=trust;
+    p11Explain.textContent=`Raw probability is the model estimate[span_24](start_span)[span_24](end_span). Calibrated probability uses prior out-of-sample outcomes only[span_25](start_span)[span_25](end_span). 95% Wilson interval: ${(ci[0]*100).toFixed(1)}–${(ci[1]*100).toFixed(1)}%.`;
+    p11Table.innerHTML=rows.map(x=>{
+      const rawx=m.p[x.d], calx=x.n>=10?(x.h+1)/(x.n+2):rawx, c=p11Wilson(x.h,x.n), tr=p11Trust(x.n,calx,rawx,c[0],.10);
+      return `<tr><td style="padding:6px;border-bottom:1px solid #182438"><b>${x.d}</b></td><td style="text-align:center">${(rawx*100).toFixed(1)}%</td><td style="text-align:center">${(calx*100).toFixed(1)}%</td><td style="text-align:center">${x.h}/${x.n}</td><td style="text-align:center">10%</td><td style="text-align:center">${tr}</td></tr>`;
+    }).join('');
+  }
+}
+
+function exportCSV(){
+  let rows=[['time','candidate','probability','agreement','actual','1tick','2tick','3tick']];
+  signalEvents.forEach(x=>rows.push([new Date(x.time*1000).toISOString(),x.candidate,x.prob,x.agreement,x.actual??'',x.w1,x.w2,x.w3]));
+  let blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});
+  let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='jm_digit_analyzer_signals.csv';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+function exportJSON(){
+  let data={signalEvents,predictionResults,symbol:$("symbol").value,exportedAt:new Date().toISOString()};
+  let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='jm_digit_analyzer_export.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+// Event Listeners
+$("connect").onclick=connect;
+$("stop").onclick=()=>stop(false);
+$("backtest").onclick=runBacktest;
+$("refreshPrediction").onclick=refreshPredictionNow;
+$("expirySeconds").onchange=()=>{if(predictionCycle.active){clearPrediction("TIMER CHANGED");refreshPredictionNow();}savePreferences();};
+$("symbol").onchange=savePreferences;
+
+$("soundToggle").onclick=()=>{
+  soundEnabled=!soundEnabled;
+  $("soundToggle").textContent=soundEnabled?"🔊 SOUND: ON":"🔇 SOUND: OFF";
+  savePreferences();
+};
+
+$("clearHistory").onclick=()=>{
+  predictionResults=[];
+  try{ localStorage.removeItem("jm_predictions"); }catch(e){}
+  renderPredictionResults();
+  log("Prediction history cleared.");
+};
+
+$("clear").onclick=()=>{
+  stop(false);arr=[];seen.clear();signalEvents=[];signals=[];lastSignalKey="";predictionResults=[];renderPredictionResults();
+  lock={candidate:null,streak:0,locked:false,cooldown:0};clearPrediction("CLEARED");
+  $("count").textContent="0";$("cur").textContent="—";$("quote").textContent="—";$("engineState").textContent="WAIT";
+  $("signalLog").textContent="No signals yet.";log("Analyzer cleared.");
+};
+
+$("manualRun").onclick=analyzeManual;
+$("export").onclick=exportCSV;
+$("exportJSON").onclick=exportJSON;
+
+loadPreferences();
+renderPredictionResults();
+setInterval(()=>{
+  if(arr.length){
+    validateLive();renderSignalLog();
+    try{p11Render(arr.map(x=>x.d));p13Render(arr)}catch(e){console.warn(e)}
+  }
+  updatePredictionTimer();
+},100);
+log("Phase 13 enhanced model competition engine ready.");
+</script>
+</body></html>
