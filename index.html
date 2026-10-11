@@ -16,7 +16,7 @@
 <div class="top">
   <div>
     <div class="title">⚡ JM DIGIT ANALYZER — PHASE 13 ENHANCED</div>
-    <div class="sub">Data → adaptive model → calibration → prediction expiry → fresh prediction[span_2](start_span)[span_2](end_span)</div>
+    <div class="sub">Data → adaptive model → calibration → prediction expiry → fresh prediction[span_1](start_span)[span_1](end_span)</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <button id="soundToggle" class="secondary" style="min-height:34px;padding:4px 10px;font-size:11px">🔊 SOUND: ON</button>
@@ -33,20 +33,20 @@
 </div>
 <div class="grid" style="margin-top:8px">
 <div class="box"><div class="label">Ticks</div><div id="count" class="big">0</div></div><div class="box"><div class="label">Current digit</div><div id="cur" class="big">—</div></div><div class="box"><div class="label">Last quote</div><div id="quote" class="big">—</div></div><div class="box"><div class="label">Pip size</div><div id="pip" class="big">—</div></div>
-</div><div class="note">Public market-data mode only. No trade execution is included in this unified research build[span_3](start_span)[span_3](end_span).</div>
+</div><div class="note">Public market-data mode only. No trade execution is included in this unified research build[span_2](start_span)[span_2](end_span).</div>
 </section>
 
 <section class="card"><div class="sectionTitle"><h2>🚦 PRIMARY SIGNAL BOARD</h2><span id="engineState" class="badge">WAIT</span></div>
 <div class="signalGrid">
-<div id="matchCard" class="signal wait"><h3>🎯 MATCHES / DIFFERS</h3><div class="main" id="matchMain">WAIT</div><div class="detail" id="matchDetail">Need live data and confirmation[span_4](start_span)[span_4](end_span).</div><div class="meter" style="margin-top:8px"><div id="matchMeter" style="width:0%"></div></div></div>
+<div id="matchCard" class="signal wait"><h3>🎯 MATCHES / DIFFERS</h3><div class="main" id="matchMain">WAIT</div><div class="detail" id="matchDetail">Need live data and confirmation[span_3](start_span)[span_3](end_span).</div><div class="meter" style="margin-top:8px"><div id="matchMeter" style="width:0%"></div></div></div>
 <div id="rangeCard" class="signal wait"><h3>📈 OVER / UNDER 5</h3><div class="main" id="rangeMain">WAIT</div><div class="detail" id="rangeDetail">—</div><div class="meter" style="margin-top:8px"><div id="rangeMeter" style="width:0%"></div></div></div>
 <div id="parityCard" class="signal wait"><h3>⚖️ EVEN / ODD</h3><div class="main" id="parityMain">WAIT</div><div class="detail" id="parityDetail">—</div><div class="meter" style="margin-top:8px"><div id="parityMeter" style="width:0%"></div></div></div>
 </div>
 <div class="grid" style="margin-top:9px">
 <div class="box"><div class="label">Primary candidate</div><div id="candidate" class="big">—</div><div id="candidateReason" class="small">—</div></div>
-<div class="box"><div class="label">Model probability</div><div id="modelProb" class="big">—</div><div class="small">10% uniform baseline[span_5](start_span)[span_5](end_span)</div></div>
-<div class="box"><div class="label">Confirmations</div><div id="confirm" class="big">—</div><div class="small">independent checks[span_6](start_span)[span_6](end_span)</div></div>
-<div class="box"><div class="label">Stable lock</div><div id="lock" class="big">OFF</div><div id="lockDetail" class="small">Waiting for repeated confirmation[span_7](start_span)[span_7](end_span)</div></div>
+<div class="box"><div class="label">Model probability</div><div id="modelProb" class="big">—</div><div class="small">10% uniform baseline[span_4](start_span)[span_4](end_span)</div></div>
+<div class="box"><div class="label">Confirmations</div><div id="confirm" class="big">—</div><div class="small">independent checks[span_5](start_span)[span_5](end_span)</div></div>
+<div class="box"><div class="label">Stable lock</div><div id="lock" class="big">OFF</div><div id="lockDetail" class="small">Waiting for repeated confirmation[span_6](start_span)[span_6](end_span)</div></div>
 </div></section>
 
 <section class="card timerCard" id="predictionExpiryCard">
@@ -74,7 +74,7 @@
     </select>
     <button id="refreshPrediction" class="primary">🔄 NEW PREDICTION NOW</button>
   </div>
-  <div class="note" style="margin-top:8px">When the countdown reaches 0.0s, this prediction expires and the analyzer requests a fresh one from the latest available ticks[span_8](start_span)[span_8](end_span).</div>
+  <div class="note" style="margin-top:8px">When the countdown reaches 0.0s, this prediction expires and the analyzer requests a fresh one from the latest available ticks[span_7](start_span)[span_7](end_span).</div>
 </section>
 
 <section class="card"><h2>🧠 Phase 2–5: Core Analysis</h2><div class="grid5">
@@ -86,7 +86,7 @@
 <section class="card"><h2>🔗 Phase 8–9: Matches Transition Lab</h2><div class="grid">
 <div class="box"><div class="label">Current digit</div><div id="currentTransition" class="big">—</div></div><div class="box"><div class="label">Candidate</div><div id="mlCandidate" class="big">—</div></div><div class="box"><div class="label">Transition confidence</div><div id="mlConfidence" class="big">WAIT</div></div><div class="box"><div class="label">Sequence stability</div><div id="sequenceStability" class="big">—</div></div>
 <div class="box"><div class="label">Repeat streak</div><div id="repeatStreak" class="big">—</div></div><div class="box"><div class="label">Score margin</div><div id="scoreMargin" class="big">—</div></div><div class="box"><div class="label">Lock state</div><div id="stableState" class="big">WAIT</div></div><div class="box"><div class="label">Lock cooldown</div><div id="cooldown" class="big">—</div></div>
-</div><div class="note" id="matchesNote">Matches is evaluated from digit-to-digit transitions, recent transitions, frequency and stability[span_9](start_span)[span_9](end_span).</div></section>
+</div><div class="note" id="matchesNote">Matches is evaluated from digit-to-digit transitions, recent transitions, frequency and stability[span_8](start_span)[span_8](end_span).</div></section>
 
 <section class="card"><h2>⏱️ Phase 7: Signal Timing</h2><div class="grid">
 <div class="box"><div class="label">Signal state</div><div id="timingState" class="big">WAIT</div></div><div class="box"><div class="label">Timing window</div><div id="timingWindow" class="big">—</div></div><div class="box"><div class="label">Confidence band</div><div id="confidenceBand" class="big">—</div></div><div class="box"><div class="label">Cooldown</div><div id="timingCooldown" class="big">READY</div></div>
@@ -94,7 +94,7 @@
 
 <section class="card"><h2>🧪 Phase 4–9: Forward Validation</h2><div class="grid">
 <div class="box"><div class="label">Historical tests</div><div id="tests" class="big">0</div></div><div class="box"><div class="label">READY tests</div><div id="readyTests" class="big">0</div></div><div class="box"><div class="label">1-tick</div><div id="hit1" class="big">—</div></div><div class="box"><div class="label">2-tick</div><div id="hit2" class="big">—</div></div><div class="box"><div class="label">3-tick</div><div id="hit3" class="big">—</div></div><div class="box"><div class="label">Matches hit</div><div id="matchHit" class="big">—</div></div><div class="box"><div class="label">Differs hit</div><div id="diffHit" class="big">—</div></div><div class="box"><div class="label">Even/Odd</div><div id="parityHit" class="big">—</div></div>
-</div><div class="note">Backtest uses chronological holdout logic: each prediction is generated only from ticks before its test point[span_10](start_span)[span_10](end_span).</div></section>
+</div><div class="note">Backtest uses chronological holdout logic: each prediction is generated only from ticks before its test point[span_9](start_span)[span_9](end_span).</div></section>
 
 <section class="card" id="predictionResultsCard">
   <div class="sectionTitle">
@@ -111,7 +111,7 @@
     <div class="box"><div class="label">Hit rate</div><div id="resultRate" class="big">—</div></div>
     <div class="box"><div class="label">Avg model P</div><div id="resultAvgP" class="big">—</div></div>
   </div>
-  <div class="note" style="margin-top:8px">A prediction is marked HIT when its candidate digit appears at least once during its timer window[span_11](start_span)[span_11](end_span).</div>
+  <div class="note" style="margin-top:8px">A prediction is marked HIT when its candidate digit appears at least once during its timer window[span_10](start_span)[span_10](end_span).</div>
   <div class="historyTable" style="margin-top:10px">
     <table><thead><tr><th>Time</th><th>Prediction</th><th>Model P</th><th>Window</th><th>Result</th><th>Ticks</th></tr></thead><tbody id="resultHistory"></tbody></table>
   </div>
@@ -123,7 +123,7 @@
 
 <section class="card" id="phase11Card">
   <h2>🧠 Phase 11 — Adaptive Intelligence & Probability Trust</h2>
-  <div class="note">Raw model probability is separated from out-of-sample calibration[span_12](start_span)[span_12](end_span).</div>
+  <div class="note">Raw model probability is separated from out-of-sample calibration[span_11](start_span)[span_11](end_span).</div>
   <div class="grid5" style="margin-top:10px">
     <div class="box"><div class="label">Candidate</div><div id="p11Candidate" class="big">—</div></div>
     <div class="box"><div class="label">Raw model</div><div id="p11Raw" class="big">—</div></div>
@@ -131,7 +131,7 @@
     <div class="box"><div class="label">OOS hits</div><div id="p11OOS" class="big">—</div></div>
     <div class="box"><div class="label">Trust</div><div id="p11Trust" class="big">WAIT</div></div>
   </div>
-  <div id="p11Explain" class="note" style="margin-top:10px">Waiting for out-of-sample observations[span_13](start_span)[span_13](end_span).</div>
+  <div id="p11Explain" class="note" style="margin-top:10px">Waiting for out-of-sample observations[span_12](start_span)[span_12](end_span).</div>
   <div style="overflow:auto;margin-top:10px">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
       <thead><tr><th style="text-align:left;padding:6px;border-bottom:1px solid #243650">Digit</th><th>Raw P</th><th>Cal P</th><th>OOS</th><th>Baseline</th><th>Trust</th></tr></thead>
@@ -142,7 +142,7 @@
 
 <section class="card" id="phase13Card">
   <h2>🏁 Phase 13 — Model Competition & Dynamic Ensemble</h2>
-  <div class="note">Independent models compete on chronological out-of-sample results[span_14](start_span)[span_14](end_span).</div>
+  <div class="note">Independent models compete on chronological out-of-sample results[span_13](start_span)[span_13](end_span).</div>
   <div class="grid5" style="margin-top:10px">
     <div class="box"><div class="label">Ensemble</div><div id="p13Candidate" class="big">—</div></div>
     <div class="box"><div class="label">Raw P</div><div id="p13Raw" class="big">—</div></div>
@@ -157,7 +157,7 @@
     <div class="box"><div class="label">Log loss</div><div id="p13LogLoss" class="big">—</div></div>
     <div class="box"><div class="label">State</div><div id="p13State" class="big">WAIT</div></div>
   </div>
-  <div id="p13Explain" class="note" style="margin-top:10px">Waiting for enough chronological data[span_15](start_span)[span_15](end_span).</div>
+  <div id="p13Explain" class="note" style="margin-top:10px">Waiting for enough chronological data[span_14](start_span)[span_14](end_span).</div>
   <div style="overflow:auto;margin-top:10px">
     <table style="width:100%;border-collapse:collapse;font-size:12px">
       <thead><tr><th style="text-align:left;padding:6px;border-bottom:1px solid #243650">Model</th><th>Weight</th><th>OOS N</th><th>Hit</th><th>Log loss</th><th>Brier</th><th>Status</th></tr></thead>
@@ -179,10 +179,14 @@
 
 <section class="card"><h2>🔧 Diagnostics</h2><div id="log" class="log"></div></section>
 
-<div class="note" style="padding:8px 2px">Phase 13 enhanced research build. State readiness indicates threshold compliance, not a guarantee[span_16](start_span)[span_16](end_span).</div>
+<div class="note" style="padding:8px 2px">Phase 13 enhanced research build. State readiness indicates threshold compliance, not a guarantee[span_15](start_span)[span_15](end_span).</div>
 </main>
 <script>
-const ENDPOINTS=["wss://ws.binaryws.com/websockets/v3?app_id=1089","wss://api.derivws.com/trading/v1/options/ws/public","wss://ws.derivws.com/websockets/v3?app_id=1089"];
+const ENDPOINTS=[
+  "wss://ws.binaryws.com/websockets/v3?app_id=1089",
+  "wss://ws.derivws.com/websockets/v3?app_id=1089",
+  "wss://blue.derivws.com/websockets/v3?app_id=1089"
+];
 const MAX=1000;
 const PIP={"1HZ10V":2,"1HZ25V":2,"1HZ50V":2,"1HZ75V":2,"1HZ100V":2};
 let ws=null,arr=[],seen=new Set(),endpointIndex=0,connectTimer=null,reconnectTimer=null,dataWatchTimer=null,manualMode=false;
@@ -197,7 +201,6 @@ const $=id=>document.getElementById(id);
 function log(s){$("log").innerHTML+="["+new Date().toLocaleTimeString()+"] "+s+"<br>";$("log").scrollTop=999999}
 function pct(x){return (100*x).toFixed(1)+"%"}
 
-// Sound synthesizer using Web Audio API
 function playTone(type){
   if(!soundEnabled)return;
   try{
@@ -206,8 +209,8 @@ function playTone(type){
     const gain=ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
     if(type==="hit"){
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      osc.frequency.setValueAtTime(880, ctx.currentTime+0.1); // A5
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime+0.1);
       gain.gain.setValueAtTime(0.1, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.3);
       osc.start(); osc.stop(ctx.currentTime+0.3);
@@ -257,23 +260,23 @@ function loadPreferences(){
 function connect(){
   stop(true);
   arr=[];seen.clear();signalEvents=[];signals=[];lastSignalKey="";lock={candidate:null,streak:0,locked:false,cooldown:0};endpointIndex=0;manualMode=false;
-  setStatus("CONNECTING…","warn");log("Starting live Deriv connection with public app_id=1089[span_17](start_span)[span_17](end_span).");
+  setStatus("CONNECTING…","warn");log("Starting secure live Deriv connection via WSS[span_16](start_span)[span_16](end_span).");
   connectionGeneration++;
   openEndpoint(connectionGeneration);
 }
 
 function openEndpoint(gen){
  if(gen!==connectionGeneration)return;
- if(endpointIndex>=ENDPOINTS.length){setStatus("OFFLINE","bad");log("All Deriv WebSocket endpoints failed or returned no tick data[span_18](start_span)[span_18](end_span).");return}
- const url=ENDPOINTS[endpointIndex++];log("Opening endpoint "+url);let local;
+ if(endpointIndex>=ENDPOINTS.length){setStatus("OFFLINE","bad");log("All Deriv secure WebSocket endpoints failed or returned no tick data[span_17](start_span)[span_17](end_span).");return}
+ const url=ENDPOINTS[endpointIndex++];log("Opening secure endpoint "+url);let local;
  try{local=new WebSocket(url)}catch(e){log("WebSocket constructor failed: "+e.message);setTimeout(()=>openEndpoint(gen),250);return}
  ws=local;let opened=false,gotTick=false,failedData=false;
  clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);
- const fallback=()=>{if(gen!==connectionGeneration||ws!==local)return;if(gotTick)return;failedData=true;clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);try{local.onclose=null;local.close()}catch(e){}ws=null;setStatus("TRYING NEXT…","warn");log("No usable tick stream from this endpoint. Switching to next endpoint.");setTimeout(()=>openEndpoint(gen),250)};
- connectTimer=setTimeout(()=>{if(ws===local&&!opened){log("Connection timeout after 10 seconds: "+url);fallback()}},10000);
- local.onopen=()=>{if(gen!==connectionGeneration)return;opened=true;clearTimeout(connectTimer);setStatus("CONNECTED","warn");log("WebSocket handshake successful.");const sym=$("symbol").value;try{local.send(JSON.stringify({ping:1,req_id:1}))}catch(e){}try{local.send(JSON.stringify({ticks:sym,subscribe:1,req_id:102}))}catch(e){log("Tick subscription send failed: "+e.message);fallback();return}try{local.send(JSON.stringify({ticks_history:sym,count:Math.min(MAX,500),end:"latest",style:"ticks",req_id:101}))}catch(e){log("History request unavailable: "+e.message)}log("Subscribed to "+sym+"; waiting for live ticks.");dataWatchTimer=setTimeout(()=>{if(ws===local&&!gotTick)fallback()},7000);pingTimer=setInterval(()=>{if(ws===local&&local.readyState===WebSocket.OPEN){try{local.send(JSON.stringify({ping:1,req_id:Date.now()%1000000}))}catch(e){}}},30000)};
+ const fallback=()=>{if(gen!==connectionGeneration||ws!==local)return;if(gotTick)return;failedData=true;clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);try{local.onclose=null;local.close()}catch(e){}ws=null;setStatus("TRYING NEXT…","warn");log("No usable tick stream from this endpoint. Switching to next secure endpoint.");setTimeout(()=>openEndpoint(gen),250)};
+ connectTimer=setTimeout(()=>{if(ws===local&&!opened){log("Connection timeout after 8 seconds: "+url);fallback()}},8000);
+ local.onopen=()=>{if(gen!==connectionGeneration)return;opened=true;clearTimeout(connectTimer);setStatus("CONNECTED","warn");log("WebSocket secure handshake successful.");const sym=$("symbol").value;try{local.send(JSON.stringify({ping:1,req_id:1}))}catch(e){}try{local.send(JSON.stringify({ticks:sym,subscribe:1,req_id:102}))}catch(e){log("Tick subscription send failed: "+e.message);fallback();return}try{local.send(JSON.stringify({ticks_history:sym,count:Math.min(MAX,500),end:"latest",style:"ticks",req_id:101}))}catch(e){log("History request unavailable: "+e.message)}log("Subscribed to "+sym+"; waiting for live secure ticks.");dataWatchTimer=setTimeout(()=>{if(ws===local&&!gotTick)fallback()},6000);pingTimer=setInterval(()=>{if(ws===local&&local.readyState===WebSocket.OPEN){try{local.send(JSON.stringify({ping:1,req_id:Date.now()%1000000}))}catch(e){}}},30000)};
  local.onmessage=e=>{if(ws!==local||gen!==connectionGeneration)return;let m;try{m=JSON.parse(e.data)}catch(err){log("Bad JSON message from Deriv");return}if(m.msg_type==="ping")return;if(m.history?.prices){let p=m.history.prices,t=m.history.times||[];log("History received: "+p.length+" ticks.");p.forEach((q,i)=>addTick({quote:q,epoch:t[i]}));runBacktest()}if(m.tick)addTick(m.tick)};
- local.onerror=()=>{if(ws===local){log("WebSocket transport error on current endpoint.");if(!gotTick)fallback()}};
+ local.onerror=()=>{if(ws===local){log("WebSocket transport error on secure endpoint.");if(!gotTick)fallback()}};
  local.onclose=e=>{if(gen!==connectionGeneration||ws!==local)return;clearTimeout(connectTimer);clearTimeout(dataWatchTimer);clearInterval(pingTimer);ws=null;if(failedData)return;log("Closed code="+e.code+" reason="+(e.reason||"none"));if(!opened){setStatus("RETRYING…","warn");setTimeout(()=>openEndpoint(gen),500)}else{setStatus("RECONNECTING…","warn");reconnectTimer=setTimeout(()=>{if(!ws)openEndpoint(gen)},1500)}};
 }
 
@@ -326,7 +329,7 @@ function classify(m){
   let d=m.best.d,mp=m.best.p;
   let match=mp>=.16?"MATCH "+d:mp>=.12?"WATCH MATCH "+d:"WAIT";
   let diff=1-mp;
-  let rangeP=m.probs.slice(5).reduce((a,b)=>a+b,0),parityP=m.probs.filter((_,d)=>d%2===0).reduce((a,b)=>a+b,0);
+  let rangeP=m.probs.slice(5).reduce((a,b)=>a+b,0),parityP=m.probs.filter((_,d)=>d%2==0).reduce((a,b)=>a+b,0);
   return {match,matchP:mp,diffP:diff,rangeP,range:rangeP>=.58?"OVER 5":rangeP<=.42?"UNDER 5":"WAIT",parityP,parity:parityP>=.58?"EVEN":parityP<=.42?"ODD":"WAIT"}
 }
 
@@ -344,13 +347,13 @@ function recordPredictionResult(){
   predictionResults=predictionResults.slice(0,100);
   try{ localStorage.setItem("jm_predictions", JSON.stringify(predictionResults)); }catch(e){}
   renderPredictionResults();
-  log('Prediction MATCH '+predictionCycle.candidate+' '+(hit?'HIT':'MISS')+' — '+windowTicks.length+' ticks observed[span_19](start_span)[span_19](end_span).');
+  log('Prediction MATCH '+predictionCycle.candidate+' '+(hit?'HIT':'MISS')+' — '+windowTicks.length+' ticks observed[span_18](start_span)[span_18](end_span).');
 }
 
 function renderPredictionResults(){
   const n=predictionResults.length,h=predictionResults.filter(x=>x.result==='HIT').length,mi=n-h,rate=n?h/n:0,avg=n?predictionResults.reduce((s,x)=>s+x.prob,0)/n:0;
   if($('resultN'))$('resultN').textContent=n;$('resultHits').textContent=h;$('resultMisses').textContent=mi;$('resultRate').textContent=n?pct(rate):'—';$('resultAvgP').textContent=n?pct(avg):'—';$('resultStatus').textContent=n+' COMPLETED';
-  if($('resultHistory'))$('resultHistory').innerHTML=predictionResults.map(x=>'<tr><td>'+new Date(x.time).toLocaleTimeString()+'</td><td><b>MATCH '+x.candidate+'</b></td><td>'+pct(x.prob)+'</td><td>'+x.duration+'s</td><td class="'+(x.result==='HIT'?'resultHit':'resultMiss')+'">'+x.result+'</td><td>'+x.ticks+(x.firstHit?' · hit #'+x.firstHit:'')+'</td></tr>').join('')||'<tr><td colspan="6" class="note">No completed predictions yet[span_20](start_span)[span_20](end_span).</td></tr>';
+  if($('resultHistory'))$('resultHistory').innerHTML=predictionResults.map(x=>'<tr><td>'+new Date(x.time).toLocaleTimeString()+'</td><td><b>MATCH '+x.candidate+'</b></td><td>'+pct(x.prob)+'</td><td>'+x.duration+'s</td><td class="'+(x.result==='HIT'?'resultHit':'resultMiss')+'">'+x.result+'</td><td>'+x.ticks+(x.firstHit?' · hit #'+x.firstHit:'')+'</td></tr>').join('')||'<tr><td colspan="6" class="note">No completed predictions yet[span_19](start_span)[span_19](end_span).</td></tr>';
 }
 
 function clearPrediction(reason="expired"){
@@ -393,7 +396,7 @@ function render(){
   updateLock(m);let c=classify(m);
   $("candidate").textContent=m.best.d;$("candidateReason").textContent="Current digit "+m.cur+" · transition samples "+m.tt;
   $("modelProb").textContent=pct(m.best.p);$("confirm").textContent=m.conf+"/7";
-  $("lock").textContent=lock.locked?"ON":"OFF";$("lockDetail").textContent=lock.locked?lock.cooldown+" ticks remaining":"streak "+lock.streak+"/3[span_21](start_span)[span_21](end_span)";
+  $("lock").textContent=lock.locked?"ON":"OFF";$("lockDetail").textContent=lock.locked?lock.cooldown+" ticks remaining":"streak "+lock.streak+"/3[span_20](start_span)[span_20](end_span)";
   $("engineState").textContent=m.state;$("longP").textContent=pct(m.longP);$("recentP").textContent=pct(m.recentP);
   $("transP").textContent=pct(m.transP);$("recentTransP").textContent=pct(m.recentTransP);$("stability").textContent=pct(m.stability);
   $("currentTransition").textContent=m.cur+" → "+m.best.d;$("mlCandidate").textContent=m.best.d;$("mlConfidence").textContent=m.state;
@@ -441,7 +444,7 @@ function validateLive(){
 }
 
 function renderSignalLog(){
-  let d=signals;$("signalLog").innerHTML=d.length?d.map(x=>'<div style="padding:6px 0;border-bottom:1px solid #1d2b40"><b>READY</b> · candidate '+x.candidate+' · '+pct(x.prob)+' · '+x.agreement+'/7 · '+new Date(x.time*1000).toLocaleTimeString()+(x.done?' · '+(x.w3?'HIT':'MISS'):' · pending')+'</div>').join(''):"No signals yet[span_22](start_span)[span_22](end_span).";
+  let d=signals;$("signalLog").innerHTML=d.length?d.map(x=>'<div style="padding:6px 0;border-bottom:1px solid #1d2b40"><b>READY</b> · candidate '+x.candidate+' · '+pct(x.prob)+' · '+x.agreement+'/7 · '+new Date(x.time*1000).toLocaleTimeString()+(x.done?' · '+(x.w3?'HIT':'MISS'):' · pending')+'</div>').join(''):"No signals yet[span_21](start_span)[span_21](end_span).";
 }
 
 function runBacktest(){
@@ -565,7 +568,7 @@ function p13Render(ds){
   el("p13OOS").textContent=x.calH+"/"+x.calN;el("p13Trust").textContent=x.trust;el("p13Agreement").textContent=pct(x.agreement);
   el("p13Drift").textContent=pct(x.drift);el("p13Brier").textContent=isFinite(x.em.brier)?x.em.brier.toFixed(4):"—";
   el("p13LogLoss").textContent=isFinite(x.em.logLoss)?x.em.logLoss.toFixed(3):"—";el("p13State").textContent=x.state;
-  el("p13Explain").textContent="Dynamic weights use prior OOS log loss with shrinkage toward equal weights[span_23](start_span)[span_23](end_span). 95% Wilson interval: "+(x.ci[0]*100).toFixed(1)+"–"+(x.ci[1]*100).toFixed(1)+"%.";
+  el("p13Explain").textContent="Dynamic weights use prior OOS log loss with shrinkage toward equal weights[span_22](start_span)[span_22](end_span). 95% Wilson interval: "+(x.ci[0]*100).toFixed(1)+"–"+(x.ci[1]*100).toFixed(1)+"%.";
   el("p13Table").innerHTML=P13_MODELS.map((m,i)=>{
     const z=x.metrics[m.id],w=x.weights[i],st=z.n<30?"WAIT":z.hit>=.15?"ACTIVE":"WEAK";
     return '<tr><td style="padding:6px;border-bottom:1px solid #182438"><b>'+m.name+'</b></td><td style="text-align:center">'+(w*100).toFixed(1)+'%</td><td style="text-align:center">'+z.n+'</td><td style="text-align:center">'+(z.hit*100).toFixed(1)+'%</td><td style="text-align:center">'+(isFinite(z.logLoss)?z.logLoss.toFixed(3):"—")+'</td><td style="text-align:center">'+(isFinite(z.brier)?z.brier.toFixed(4):"—")+'</td><td style="text-align:center">'+st+'</td></tr>';
@@ -607,7 +610,7 @@ function p11Render(ds){
   if(document.getElementById('p11Candidate')){
     p11Candidate.textContent='MATCH '+m.best;p11Raw.textContent=(raw*100).toFixed(1)+'%';p11Cal.textContent=(cal*100).toFixed(1)+'%';
     p11OOS.textContent=(r?.h||0)+'/'+(r?.n||0);p11Trust.textContent=trust;
-    p11Explain.textContent=`Raw probability is the model estimate[span_24](start_span)[span_24](end_span). Calibrated probability uses prior out-of-sample outcomes only[span_25](start_span)[span_25](end_span). 95% Wilson interval: ${(ci[0]*100).toFixed(1)}–${(ci[1]*100).toFixed(1)}%.`;
+    p11Explain.textContent=`Raw probability is the model estimate[span_23](start_span)[span_23](end_span). Calibrated probability uses prior out-of-sample outcomes only[span_24](start_span)[span_24](end_span). 95% Wilson interval: ${(ci[0]*100).toFixed(1)}–${(ci[1]*100).toFixed(1)}%.`;
     p11Table.innerHTML=rows.map(x=>{
       const rawx=m.p[x.d], calx=x.n>=10?(x.h+1)/(x.n+2):rawx, c=p11Wilson(x.h,x.n), tr=p11Trust(x.n,calx,rawx,c[0],.10);
       return `<tr><td style="padding:6px;border-bottom:1px solid #182438"><b>${x.d}</b></td><td style="text-align:center">${(rawx*100).toFixed(1)}%</td><td style="text-align:center">${(calx*100).toFixed(1)}%</td><td style="text-align:center">${x.h}/${x.n}</td><td style="text-align:center">10%</td><td style="text-align:center">${tr}</td></tr>`;
@@ -630,7 +633,6 @@ function exportJSON(){
   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
-// Event Listeners
 $("connect").onclick=connect;
 $("stop").onclick=()=>stop(false);
 $("backtest").onclick=runBacktest;
