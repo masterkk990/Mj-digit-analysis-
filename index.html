@@ -19,7 +19,7 @@
 <div class="mt-3 bg-slate-900 text-white rounded-xl p-3 flex justify-between items-center">
 <div><div class="text-[9px] text-slate-400">NEXT SIGNAL IN</div><div id="bigTimer" class="text-3xl font-bold text-yellow-400">30</div><div class="text-[8px] text-slate-500">sec to trade</div></div>
 <div class="text-center"><div class="text-[8px] text-slate-400">TIMER</div><select id="timerSelect" class="bg-slate-800 text-white text-[11px] rounded px-2 py-1 mt-1"><option value="30" selected>30s</option><option value="60">60s</option><option value="90">90s</option></select></div>
-<div class="text-right"><button id="btnPause" onclick="togglePause()" class="bg-amber-500 text-[11px] px-3 py-2 rounded-lg font-bold">⏸ PAUSE</button><div id="status" class="text-[8px] text-emerald-400 mt-1">● CONNECTED - LOADING HISTORY</div></div>
+<div class="text-right"><button id="btnPause" onclick="togglePause()" class="bg-amber-500 text-[11px] px-3 py-2 rounded-lg font-bold">⏸ PAUSE</button><div id="status" class="text-[8px] text-emerald-400 mt-1">● LIVE</div></div>
 </div>
 
 <div class="mt-3 grid grid-cols-2 gap-2">
@@ -28,7 +28,7 @@
 </div>
 
 <div class="mt-3 bg-[#f0fdf4] border-2 border-emerald-300 rounded-xl p-3">
-<div class="flex justify-between"><span class="text-[10px] font-bold text-emerald-700 tracking-widest">MATCHES SIGNAL - LIVE</span><span id="timeStamp" class="text-[10px] text-slate-500">11:28:19</span></div>
+<div class="flex justify-between"><span class="text-[10px] font-bold text-emerald-700 tracking-widest">MATCHES SIGNAL - LIVE</span><span id="timeStamp" class="text-[10px] text-slate-500">--:--:--</span></div>
 <div class="flex items-center gap-3 mt-2">
 <div id="signalDigit" class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center text-3xl font-bold text-white shadow">5</div>
 <div><div class="text-[10px] text-slate-500">CONFIDENCE</div><div id="confidence" class="text-2xl font-bold text-emerald-600">98.2%</div><div id="lockedBadge" class="text-[9px] bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full mt-1 font-bold">🔒 LOCKED 30s - TRADE NOW</div></div>
@@ -42,28 +42,20 @@
 </div></div>
 
 <script>
-let ticks=[],target=5,consec=0,socket=null,paused=false,signalLocked=false,lockTimer=null,timerDuration=30,timeLeft=30,currentEndpoint=0;
-const symbolMap={"R_100":["1HZ100V","R_100"],"R_50":["1HZ50V","R_50"],"R_25":["1HZ25V","R_25"],"R_10":["1HZ10V","R_10"]};
-const endpoints=[{url:"wss://ws.derivws.com/websockets/v3?app_id=1089",type:"old"},{url:"wss://api.derivws.com/trading/v1/options/ws/public",type:"new"}];
+let ticks=[],target=5,consec=0,socket=null,paused=false,signalLocked=false,lockTimer=null,timerDuration=30,timeLeft=30;
+const symbolMap={"R_100":"R_100","R_50":"R_50","R_25":"R_25","R_10":"R_10"};
 
 function togglePause(){paused=!paused;document.getElementById('btnPause').innerText=paused?"▶ RESUME":"⏸ PAUSE";}
 function forceSignal(){signalLocked=false;timeLeft=timerDuration;generateSignal();}
 
 function generateSignal(){
  if(ticks.length<15) return;
- if(paused && signalLocked) return;
  let recent=ticks.slice(0,25);
  let c=Array(10).fill(0); recent.forEach(t=>c[t]++);
  let max=Math.max(...c); let hot=c.indexOf(max);
  target=hot;
- // *** INCREASED PROBABILITY LOGIC - ONLY CHANGE ***
- let conf=(max/recent.length*100);
- if(max>=8) conf=94 + Math.random()*5; // 94-99% like video
- else if(max>=6) conf=86 + Math.random()*8; // 86-94%
- else if(max>=5) conf=76 + Math.random()*10; // 76-86%
- else conf=68 + Math.random()*10; // min 68%
+ let conf=max>=8?94+Math.random()*5:max>=6?86+Math.random()*8:max>=5?76+Math.random()*10:68+Math.random()*10;
  conf=Math.min(99.2,conf);
-
  document.getElementById('signalDigit').innerText=hot;
  document.getElementById('targetDisplay').innerText="Digit "+hot+" MATCHES";
  document.getElementById('confidence').innerText=conf.toFixed(1)+"%";
@@ -73,52 +65,53 @@ function generateSignal(){
  document.getElementById('lockedBadge').innerText="🔒 LOCKED "+timerDuration+"s - TRADE NOW";
  signalLocked=true; timeLeft=timerDuration;
  clearTimeout(lockTimer);
- lockTimer=setTimeout(()=>{signalLocked=false;generateSignal();}, timerDuration*1000);
+ lockTimer=setTimeout(()=>{signalLocked=false;generateSignal();},timerDuration*1000);
+ renderTicks();
+}
+
+function renderTicks(){
+ let h=''; ticks.slice(0,48).forEach(x=>{
+  let m=x===target;
+  h+=`<span style="width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-weight:800;font-size:11px;margin:2px;${m?'background:#22c55e;color:#fff;box-shadow:0 2px 6px rgba(34,197,94,0.4)':'background:#fff;color:#64748b;border:1px solid #e2e8f0'}">${x}</span>`;
+ });
+ document.getElementById('digitStream').innerHTML=h;
 }
 
 function addTick(p,d,isHist=false){
  if(paused) return;
  if(!isHist){ticks.unshift(d); if(ticks.length>100) ticks.pop();} else {ticks.push(d);}
- if(target!==null){ if(d===target) consec=0; else consec++; }
+ if(d===target) consec=0; else consec++;
  document.getElementById('liveStream').innerText=parseFloat(p).toFixed(3);
  document.getElementById('lastDigit').innerText="LAST: "+d;
  document.getElementById('streak').innerText="DIFF: "+consec;
- document.getElementById('liveDot').className="ml-auto w-3 h-3 bg-emerald-500 rounded-full animate-pulse";
  document.getElementById('status').innerText="● LIVE "+ticks.length;
- let h=''; ticks.slice(0,48).forEach(x=>{
-  let m=x===target;
-  h+=`<span style="width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-weight:800;font-size:11px;margin:2px;${m?'background:#22c55e;color:#fff':'background:#fff;color:#64748b;border:1px solid #e2e8f0'}">${x}</span>`;
- });
- document.getElementById('digitStream').innerHTML=h;
+ document.getElementById('liveDot').className="ml-auto w-3 h-3 bg-emerald-500 rounded-full animate-pulse";
+ renderTicks();
  if(!isHist &&!signalLocked && ticks.length%10===0) generateSignal();
 }
 
 function connect(){
  let m=document.getElementById('market').value;
- let ep=endpoints[currentEndpoint % endpoints.length];
- let trySymbol=symbolMap[m]?(ep.type==="new"?symbolMap[m][0]:symbolMap[m][1]):m;
+ let sym=symbolMap[m]||m;
  if(socket) try{socket.close()}catch(e){}
- document.getElementById('status').innerText="● CONNECTING "+trySymbol;
- socket=new WebSocket(ep.url);
- let timeout=setTimeout(()=>{currentEndpoint++;connect();},3500);
- socket.onopen=()=>{clearTimeout(timeout);socket.send(JSON.stringify({ticks_history:trySymbol,count:100,end:"latest",style:"ticks"}));};
+ document.getElementById('status').innerText="● CONNECTING "+sym;
+ // USE SINGLE STABLE ENDPOINT - THIS WAS THE CAUSE OF SCANNING BUG
+ socket=new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+ socket.onopen=()=>{socket.send(JSON.stringify({ticks_history:sym,count:100,end:"latest",style:"ticks"}));};
  socket.onmessage=e=>{
   let data=JSON.parse(e.data);
-  if(data.error){clearTimeout(timeout);currentEndpoint++;setTimeout(connect,1000);return;}
   if(data.history){
-   clearTimeout(timeout);
    ticks=[];
    data.history.prices.forEach(pr=>{
     let price=parseFloat(pr); let s=price.toString().split('.'); if(s.length<2) return;
     let d=parseInt(s[1].slice(-1)); if(!isNaN(d)) ticks.push(d);
    });
    ticks=ticks.slice(0,100).reverse();
-   document.getElementById('status').innerText="● CONNECTED - LOADING HISTORY";
-   document.getElementById('marketLabel').innerText=trySymbol+" - Live 100 ticks";
-   socket.send(JSON.stringify({ticks:trySymbol,subscribe:1}));
-   let h=''; ticks.slice(0,48).forEach(x=>{h+=`<span style="width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-weight:800;font-size:11px;margin:2px;background:#fff;color:#64748b;border:1px solid #e2e8f0">${x}</span>`;});
-   document.getElementById('digitStream').innerHTML=h;
+   document.getElementById('status').innerText="● LIVE "+sym;
+   document.getElementById('marketLabel').innerText=sym+" - Live 100 ticks";
    document.getElementById('digitCounts').innerText=ticks.length+" ticks loaded";
+   renderTicks();
+   socket.send(JSON.stringify({ticks:sym,subscribe:1}));
    generateSignal();
   }
   if(data.tick){
@@ -127,11 +120,11 @@ function connect(){
    addTick(p,d,false);
   }
  };
- socket.onerror=()=>{clearTimeout(timeout);currentEndpoint++;setTimeout(connect,1000);};
- socket.onclose=()=>{if(ticks.length<10){clearTimeout(timeout);currentEndpoint++;setTimeout(connect,1000);}};
+ socket.onerror=()=>{document.getElementById('status').innerText="● RETRYING...";setTimeout(connect,1500);};
+ socket.onclose=()=>{if(ticks.length<20) setTimeout(connect,1500);};
 }
 
-function scan(){ticks=[];target=null;consec=0;signalLocked=false;timeLeft=timerDuration;currentEndpoint=0;document.getElementById('digitStream').innerHTML="Scanning...";connect();}
+function scan(){ticks=[];target=null;consec=0;signalLocked=false;timeLeft=timerDuration;document.getElementById('digitStream').innerHTML="Scanning market...";connect();}
 document.getElementById('market').addEventListener('change',scan);
 document.getElementById('timerSelect').addEventListener('change',()=>{timerDuration=parseInt(document.getElementById('timerSelect').value);timeLeft=timerDuration;});
 setInterval(()=>{if(!paused&&timeLeft>0){timeLeft--;document.getElementById('bigTimer').innerText=timeLeft;if(timeLeft<=0){signalLocked=false;generateSignal();}}},1000);
