@@ -1,90 +1,94 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matches Scanner LIVE 90% MJ</title>
+<title>Matches Signal Scanner - LIVE FIXED</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="p-3 bg-[#eef7ff]">
 <div class="max-w-[400px] mx-auto">
 <div class="bg-white rounded-[20px] border border-blue-100 p-4 shadow-lg">
+
 <div class="flex items-center gap-2">
 <div class="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">M</div>
-<div><div class="font-bold text-[15px]">Matches Signal Scanner</div><div class="text-[10px] text-slate-400">protraderanalysistool.com • LIVE 90%+</div></div>
+<div><div class="font-bold text-[15px]">Matches Signal Scanner</div><div class="text-[10px] text-slate-400">protraderanalysistool.com • LIVE FIXED</div></div>
 <div id="liveDot" class="ml-auto w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
 </div>
 
-<div class="mt-4 flex justify-between"><span class="text-[12px] font-extrabold">TRADE MATCH</span><span id="marketLabel" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded-full">Vol 100 - Live</span></div>
-<div class="mt-2 w-full h-2 bg-slate-100 rounded-full"><div id="progress" class="h-full bg-emerald-500" style="width:0%"></div></div>
-<div class="flex justify-between mt-1"><span id="digitCounts" class="text-[10px] text-slate-500 font-bold">Connecting...</span><span class="text-[10px] text-slate-400">Last 25 ticks analysis</span></div>
+<div class="mt-4 flex justify-between"><span class="text-[12px] font-extrabold">TRADE MATCH</span><span id="marketLabel" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded-full">Volatility 100 - Live 100 ticks</span></div>
+<div class="mt-2 w-full h-2 bg-slate-100 rounded-full"><div id="progress" class="h-full bg-blue-500" style="width:0%"></div></div>
+<div class="flex justify-between mt-1"><span id="digitCounts" class="text-[10px] text-slate-500 font-bold">Connecting to NEW Deriv Live...</span><span class="text-[10px] text-slate-400">Last 100 ticks</span></div>
 
+<!-- TIMER LOCK -->
 <div class="mt-3 bg-slate-900 text-white rounded-xl p-3 flex justify-between items-center">
-<div><div class="text-[9px] text-slate-400">NEXT SIGNAL IN</div><div id="bigTimer" class="text-3xl font-bold text-yellow-400">60</div></div>
-<div class="text-center"><div class="text-[8px] text-slate-400">TIMER</div><select id="timerSelect" class="bg-slate-800 text-white text-[11px] rounded px-2 py-1 mt-1"><option value="30">30s</option><option value="60" selected>60s</option><option value="90">90s</option></select></div>
-<div class="text-right"><button id="btnPause" onclick="togglePause()" class="bg-amber-500 text-[11px] px-3 py-2 rounded-lg font-bold">⏸ PAUSE</button><div id="status" class="text-[8px] text-yellow-400 mt-1">CONNECTING</div></div>
+<div><div class="text-[9px] text-slate-400">NEXT SIGNAL IN</div><div id="bigTimer" class="text-3xl font-bold text-yellow-400">60</div><div class="text-[8px] text-slate-500">sec to trade</div></div>
+<div class="text-center"><div class="text-[8px] text-slate-400">TIMER</div>
+<select id="timerSelect" onchange="setTimer()" class="bg-slate-800 text-white text-[11px] rounded px-2 py-1 mt-1"><option value="30">30s</option><option value="60" selected>60s</option><option value="90">90s</option><option value="120">120s</option></select>
+</div>
+<div class="text-right"><button id="btnPause" onclick="togglePause()" class="bg-amber-500 text-[11px] px-3 py-2 rounded-lg font-bold">⏸ PAUSE</button><div id="status" class="text-[8px] text-yellow-400 mt-1">● CONNECTING NEW API</div></div>
 </div>
 
 <div class="mt-3 grid grid-cols-2 gap-2">
-<button onclick="scan()" class="bg-slate-100 py-2.5 rounded-xl text-xs font-bold">🔄 Re-scan</button>
-<button onclick="forceSignal()" class="bg-blue-600 text-white py-2.5 rounded-xl text-xs font-bold">🎯 New Signal</button>
+<button onclick="scan()" class="bg-slate-100 py-2.5 rounded-xl text-xs font-bold">🔄 Re-scan market</button>
+<button onclick="forceSignal()" class="bg-blue-600 text-white py-2.5 rounded-xl text-xs font-bold">🎯 Force Signal Now</button>
 </div>
 
 <div class="mt-3 bg-[#f0fdf4] border-2 border-emerald-300 rounded-xl p-3">
 <div class="flex justify-between"><span class="text-[10px] font-bold text-emerald-700 tracking-widest">MATCHES SIGNAL - LIVE</span><span id="timeStamp" class="text-[10px] text-slate-500">--:--:--</span></div>
 <div class="flex items-center gap-3 mt-2">
 <div id="signalDigit" class="w-16 h-16 bg-slate-300 rounded-xl flex items-center justify-center text-3xl font-bold text-white">-</div>
-<div><div class="text-[10px] text-slate-500">CONFIDENCE</div><div id="confidence" class="text-2xl font-bold text-slate-400">--%</div><div id="lockedBadge" class="text-[9px] bg-slate-100 px-2 py-0.5 rounded-full mt-1">LOADING...</div></div>
-<div class="ml-auto text-right"><div id="liveStream" class="text-[13px] font-bold">----.---</div><div class="text-[8px] text-slate-400">LIVE PRICE</div><div class="mt-1 text-[10px]">Trade: <b id="targetDisplay" class="text-emerald-600">-</b></div></div>
+<div><div class="text-[10px] text-slate-500">CONFIDENCE</div><div id="confidence" class="text-2xl font-bold text-slate-400">--%</div><div id="lockedBadge" class="text-[9px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full mt-1">CONNECTING...</div></div>
+<div class="ml-auto text-right"><div id="liveStream" class="text-[13px] font-bold font-mono">----.---</div><div class="text-[8px] text-slate-400">LIVE PRICE</div><div class="mt-1 text-[10px]">Trade: <b id="targetDisplay" class="text-emerald-600">-</b></div></div>
 </div>
 </div>
 
-<div class="mt-4"><div class="flex justify-between text-[11px] font-bold"><span>Live Tick Stream</span><span id="lastDigit" class="text-blue-600">LAST: -</span></div>
-<div id="digitStream" class="flex flex-wrap gap-1 mt-2 min-h-[90px] bg-slate-50 rounded-xl p-2 border">Connecting to live feed...</div></div>
-<select id="market" class="w-full mt-3 bg-white border rounded-lg p-2.5 text-xs font-bold"><option value="R_100" selected>Volatility 100 Index</option><option value="R_50">Vol 50</option><option value="R_25">Vol 25</option><option value="R_10">Vol 10</option></select>
-</div></div>
+<div class="mt-4"><div class="flex justify-between"><span class="text-[11px] font-bold">Live Tick Stream</span><span class="text-[10px]"><span id="lastDigit" class="text-blue-600 font-bold">LAST: -</span> <span id="streak" class="text-amber-600 ml-2 font-bold"></span></span></div>
+<div id="digitStream" class="flex flex-wrap gap-1 mt-2 min-h-[90px] bg-slate-50 rounded-xl p-2 border">Waiting for live ticks...</div></div>
+
+<select id="market" class="w-full mt-3 bg-white border rounded-lg p-2.5 text-xs font-bold"><option value="R_100" selected>Volatility 100 Index</option><option value="R_50">Volatility 50</option><option value="R_25">Volatility 25</option><option value="R_10">Volatility 10</option></select>
+</div>
+</div>
 
 <script>
-let ticks=[],target=null,consec=0,socket=null,paused=false,signalLocked=false,lockTimer=null,timerDuration=60,timeLeft=60;
-function togglePause(){paused=!paused; document.getElementById('btnPause').innerText=paused?"▶ RESUME":"⏸ PAUSE";}
+let ticks=[],target=null,consec=0,socket=null,paused=false,signalLocked=false,lockTimer=null;
+let timerDuration=60,timeLeft=60;
+
+function setTimer(){timerDuration=parseInt(document.getElementById('timerSelect').value);timeLeft=timerDuration;}
+function togglePause(){paused=!paused; document.getElementById('btnPause').innerText=paused?"▶ RESUME":"⏸ PAUSE"; document.getElementById('btnPause').className=paused?"bg-emerald-500 text-[11px] px-3 py-2 rounded-lg font-bold":"bg-amber-500 text-[11px] px-3 py-2 rounded-lg font-bold";}
 function forceSignal(){signalLocked=false;timeLeft=timerDuration;generateSignal();}
-document.getElementById('timerSelect').addEventListener('change',()=>{timerDuration=parseInt(document.getElementById('timerSelect').value);timeLeft=timerDuration;});
 
 function generateSignal(){
- if(paused||signalLocked||ticks.length<15) return;
- let recent=ticks.slice(0,25);
- let c=Array(10).fill(0); recent.forEach(t=>c[t]++);
+ if(paused||signalLocked||ticks.length<20) return;
+ let c=Array(10).fill(0); ticks.forEach(t=>c[t]++);
  let max=Math.max(...c); let hot=c.indexOf(max);
  target=hot;
- let conf=(max/recent.length*100);
- if(max>=8) conf=92+Math.random()*6.9;
- else if(max>=6) conf=78+Math.random()*14;
- else if(max>=5) conf=65+Math.random()*12;
- else conf=58+Math.random()*10;
- conf=Math.min(99.2,conf);
+ let conf=(max/ticks.length*100);
+ if(consec>=2) conf=Math.min(99.2,conf+12+consec*3);
  document.getElementById('signalDigit').innerText=hot;
  document.getElementById('signalDigit').className="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center text-3xl font-bold text-white shadow-lg";
  document.getElementById('targetDisplay').innerText="Digit "+hot+" MATCHES";
  document.getElementById('confidence').innerText=conf.toFixed(1)+"%";
- document.getElementById('confidence').className=conf>85?"text-2xl font-bold text-emerald-600":"text-2xl font-bold text-amber-500";
+ document.getElementById('confidence').className= conf>90? "text-2xl font-bold text-emerald-600" : "text-2xl font-bold text-amber-500";
  document.getElementById('progress').style.width=conf+"%";
- document.getElementById('digitCounts').innerText=c.join(" • ")+" = "+recent.length+" (recent 25) HOT:"+hot;
+ document.getElementById('digitCounts').innerText=c.join(" • ")+" = "+ticks.length;
  document.getElementById('timeStamp').innerText=new Date().toLocaleTimeString();
  document.getElementById('lockedBadge').innerText="🔒 LOCKED "+timerDuration+"s - TRADE NOW";
- document.getElementById('lockedBadge').className="text-[9px] bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full mt-1 font-bold";
  signalLocked=true; timeLeft=timerDuration;
  clearTimeout(lockTimer);
- lockTimer=setTimeout(()=>{signalLocked=false; generateSignal();}, timerDuration*1000);
+ lockTimer=setTimeout(()=>{signalLocked=false; document.getElementById('lockedBadge').innerText="🔓 READY..."; generateSignal();}, timerDuration*1000);
 }
 
 function addTick(p,d,isHist=false){
  if(paused) return;
- if(!isHist){ticks.unshift(d); if(ticks.length>100) ticks.pop();} else {ticks.push(d);}
+ if(!isHist){ ticks.unshift(d); if(ticks.length>100) ticks.pop(); }
+ else { ticks.push(d); }
  if(target!==null){ if(d===target) consec=0; else consec++; }
  document.getElementById('liveStream').innerText=parseFloat(p).toFixed(3);
- document.getElementById('lastDigit').innerText="LAST: "+d+" DIFF:"+consec;
+ document.getElementById('lastDigit').innerText="LAST: "+d;
+ document.getElementById('streak').innerText="DIFF: "+consec;
  document.getElementById('liveDot').className="ml-auto w-2 h-2 bg-emerald-500 rounded-full animate-pulse";
- document.getElementById('status').innerText="● LIVE "+ticks.length;
+ document.getElementById('status').innerText="● LIVE "+ticks.length+" ticks";
  let h=''; ticks.slice(0,48).forEach(x=>{
   let m=x===target;
-  h+=`<span style="width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-weight:800;font-size:11px;margin:2px;${m?'background:#22c55e;color:#fff':'background:#fff;color:#64748b;border:1px solid #e2e8f0'}">${x}</span>`;
+  h+=`<span style="width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-weight:800;font-size:11px;margin:2px;${m?'background:#22c55e;color:#fff;box-shadow:0 2px 6px rgba(34,197,94,0.4)':'background:#fff;color:#64748b;border:1px solid #e2e8f0'}">${x}</span>`;
  });
  document.getElementById('digitStream').innerHTML=h;
 }
@@ -92,6 +96,60 @@ function addTick(p,d,isHist=false){
 function connect(){
  let m=document.getElementById('market').value;
  if(socket) try{socket.close()}catch(e){}
- document.getElementById('status').innerText="● CONNECTING NEW API";
+ // NEW DERIV PUBLIC ENDPOINT - works in Kenya
+ document.getElementById('status').innerText="● CONNECTING api.derivws.com";
  socket=new WebSocket("wss://api.derivws.com/trading/v1/options/ws/public");
- socket.onopen=()=>{socket.send(JSON.stringify({ticks_history:m,count:100,end:"latest",style:"ticks"}));};
+ socket.onopen=()=>{
+  document.getElementById('status').innerText="● CONNECTED - LOADING HISTORY";
+  socket.send(JSON.stringify({ticks_history:m, count:100, end:"latest", style:"ticks"}));
+ };
+ socket.onmessage=e=>{
+  let data=JSON.parse(e.data);
+  if(data.error){ document.getElementById('status').innerText="ERR: "+data.error.message; return; }
+  if(data.history){
+   ticks=[];
+   data.history.prices.forEach(p=>{
+    let price=parseFloat(p);
+    let s=price.toString().split('.'); if(s.length<2) return;
+    let d=parseInt(s[1].slice(-1)); if(isNaN(d)) return;
+    ticks.push(d);
+   });
+   ticks=ticks.slice(0,100);
+   // reverse to have latest first after history load
+   ticks=ticks.reverse();
+   let histPrices=data.history.prices.slice(-ticks.length);
+   // rebuild display
+   document.getElementById('digitStream').innerHTML="";
+   ticks.forEach((d,i)=>{
+    let p=parseFloat(histPrices[i]||1200);
+    // don't double count, just render
+   });
+   let h=''; ticks.slice(0,48).forEach(x=>{
+    h+=`<span style="width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;font-weight:800;font-size:11px;margin:2px;background:#fff;color:#64748b;border:1px solid #e2e8f0">${x}</span>`;
+   });
+   document.getElementById('digitStream').innerHTML=h;
+   document.getElementById('digitCounts').innerText=ticks.length+" ticks loaded";
+   document.getElementById('status').innerText="● SUBSCRIBING LIVE";
+   // now subscribe to live ticks
+   socket.send(JSON.stringify({ticks:m, subscribe:1}));
+   if(ticks.length>=20) generateSignal();
+  }
+  if(data.tick){
+   let p=data.tick.quote;
+   let s=p.toString().split('.'); if(s.length<2) return;
+   let d=parseInt(s[1].slice(-1)); if(isNaN(d)) return;
+   addTick(p,d,false);
+   if(!signalLocked && ticks.length>=20 && ticks.length%12===0) generateSignal();
+  }
+ };
+ socket.onerror=()=>{ document.getElementById('status').innerText="● WS ERROR RETRYING..."; setTimeout(connect,2000); };
+ socket.onclose=()=>{ document.getElementById('status').innerText="● RECONNECTING..."; setTimeout(connect,2000); };
+}
+
+function scan(){ticks=[];target=null;consec=0;signalLocked=false;timeLeft=timerDuration;document.getElementById('digitStream').innerHTML="Scanning new market..."; connect();}
+
+document.getElementById('market').addEventListener('change',scan);
+setInterval(()=>{ if(!paused && timeLeft>0){ timeLeft--; document.getElementById('bigTimer').innerText=timeLeft; }},1000);
+window.onload=connect;
+</script>
+</body></html>
