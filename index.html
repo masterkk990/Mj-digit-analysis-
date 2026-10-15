@@ -1,123 +1,474 @@
+
 <!DOCTYPE html>
-<html><head>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matches LIVE FIX</title>
+<title>MJ Digit Confluence AI - Validation Lab</title>
 <style>
-body{font-family:Arial;background:#f2f5f9;margin:0;padding:8px}
-.card{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.header{background:linear-gradient(90deg,#00c853,#0ea5e9);color:#fff;padding:12px;border-radius:12px 12px 0 0;margin:-12px -12px 12px -12px;text-align:center}
-select{width:100%;padding:12px;border-radius:8px;border:2px solid #10b981;background:#e0f2fe;font-size:16px;font-weight:bold}
-.tick{padding:8px;text-align:center;border-radius:6px;background:#e5e7eb;font-weight:bold}
-.tick.hot{background:#10b981;color:#fff}
-button{background:linear-gradient(90deg,#0d9488,#2563eb);color:#fff;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold}
+:root{--bg:#080d14;--card:#121b27;--line:#2a3b50;--green:#00e99a;--red:#ff6376;--yellow:#ffd166;--muted:#9aabc0}
+*{box-sizing:border-box}
+body{margin:auto;padding:12px;max-width:1000px;background:var(--bg);color:#edf4fc;font:13px system-ui,Arial}
+h1{text-align:center;color:var(--green);font-size:21px}
+h2{font-size:15px;margin:0 0 12px}
+.sub,.note{color:var(--muted);font-size:11px;line-height:1.6}
+.sub{text-align:center;margin:7px 0 15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0}
+label{display:block;color:#a9c7ef;margin:9px 0 5px}
+select,button{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#09111b;color:white;font:inherit}
+button{background:var(--green);color:#03150e;border:0;font-weight:bold}
+button.secondary{background:#26364a;color:white}
+.row{display:flex;gap:9px;align-items:center}
+.row>*{flex:1;min-width:0}
+.status{text-align:center;padding:10px;border-radius:8px;background:#09111b;color:var(--yellow);margin-top:10px}
+.price{text-align:center;font-size:23px;overflow-wrap:anywhere}
+.big{text-align:center;font-size:45px;font-weight:bold;color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.tile{background:#09111b;border:1px solid var(--line);padding:9px 3px;border-radius:8px;text-align:center}
+.tile b{display:block;font-size:19px}
+.tile small{font-size:10px;color:var(--muted)}
+.bar{height:5px;background:#28364a;margin-top:5px;border-radius:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green)}
+.metric{padding:10px;background:#09111b;border-radius:8px}
+.metric span{font-size:10px;color:var(--muted)}
+.metric b{display:block;font-size:19px;margin-top:4px;overflow-wrap:anywhere}
+.signal{padding:11px;border:1px solid var(--line);border-radius:9px;background:#0b131e;margin:8px 0}
+.green{color:var(--green)}.red{color:var(--red)}.yellow{color:var(--yellow)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th,td{text-align:right;padding:8px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+@media(min-width:650px){.grid{grid-template-columns:repeat(10,minmax(0,1fr))}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}}
 </style>
-</head><body>
+</head>
+<body>
+<h1>🔢 MJ DIGIT CONFLUENCE AI</h1>
+<div class="sub">LIVE DERIV DATA · DIGIT STATISTICS · OUT-OF-SAMPLE VALIDATION</div>
 
 <div class="card">
-<div class="header"><h2 style="margin:0">Matches Signal Scanner - LIVE DERIV</h2><small id="status" style="color:yellow">Connecting...</small></div>
-<label style="font-weight:bold">🌐 Volatility Index Selection</label>
-<select id="volSelect">
-<option value="R_10">Volatility 10 Index</option>
-<option value="R_25" selected>Volatility 25 Index</option>
-<option value="R_50">Volatility 50 Index</option>
-<option value="R_75">Volatility 75 Index</option>
-<option value="R_100">Volatility 100 Index</option>
-<option value="1HZ10V">Vol 10 (1s)</option>
-<option value="1HZ25V">Vol 25 (1s)</option>
-<option value="1HZ50V">Vol 50 (1s)</option>
-<option value="1HZ75V">Vol 75 (1s)</option>
-<option value="1HZ100V">Vol 100 (1s)</option>
+<h2>Live connection</h2>
+<label for="market">Synthetic index</label>
+<select id="market">
+<option value="1HZ10V">Volatility 10 (1s)</option>
+<option value="1HZ25V">Volatility 25 (1s)</option>
+<option value="1HZ50V">Volatility 50 (1s)</option>
+<option value="1HZ75V">Volatility 75 (1s)</option>
+<option value="1HZ100V">Volatility 100 (1s)</option>
+<option value="R_10">Volatility 10</option>
+<option value="R_25">Volatility 25</option>
+<option value="R_50">Volatility 50</option>
+<option value="R_75">Volatility 75</option>
+<option value="R_100" selected>Volatility 100</option>
 </select>
-<small id="marketLabel" style="color:#059669;font-weight:bold;display:block;margin-top:6px"></small>
+<div class="row">
+<div>
+<label for="win">Analysis window</label>
+<select id="win">
+<option value="100">100 ticks</option>
+<option value="500">500 ticks</option>
+<option value="1000" selected>1000 ticks</option>
+</select>
+</div>
+<div>
+<label for="target">Matches digit</label>
+<select id="target">
+<option>0</option><option>1</option><option>2</option>
+<option>3</option><option>4</option><option>5</option>
+<option>6</option><option selected>7</option><option>8</option><option>9</option>
+</select>
+</div>
+</div>
+<div class="row" style="margin-top:12px">
+<button id="connect">CONNECT LIVE</button>
+<button id="disconnect" class="secondary">DISCONNECT</button>
+</div>
+<div id="status" class="status">Disconnected</div>
+<div id="diag" class="note" style="margin-top:8px">Waiting for connection.</div>
 </div>
 
-<div class="card"><b>TRADE MATCH</b> <small id="counter">0/100</small>
-<div style="height:10px;background:#e5e7eb;border-radius:10px;margin:8px 0"><div id="bar" style="height:100%;width:0%;background:linear-gradient(90deg,#10b981,#0ea5e9)"></div></div>
-<div id="dist">Waiting...</div>
+<div class="two">
+<div class="card">
+<h2>Latest tick</h2>
+<div id="price" class="price">—</div>
+<div id="digit" class="big">—</div>
+<div id="time" class="note" style="text-align:center">Waiting for live data</div>
 </div>
-
-<div class="card" style="border:2px solid #10b981;background:#f0fdf4;text-align:center">
-<b style="color:#059669">MATCHES SIGNAL</b><br>
-<div style="font-size:50px;font-weight:bold;color:#059669" id="hot">-</div>
-<div>CONFIDENCE <b id="conf" style="color:#059669;font-size:22px">0%</b></div>
-<div style="background:#fef3c7;padding:8px;border-radius:8px;margin-top:8px">Trade Digit <b id="trade">WAIT</b> MATCHES</div>
-<div id="price" style="margin-top:6px;font-size:12px">Price: -</div>
+<div class="card">
+<h2>Session</h2>
+<div class="row">
+<div class="metric"><span>Ticks received</span><b id="received">0</b></div>
+<div class="metric"><span>Stored digits</span><b id="stored">0</b></div>
+</div>
+<div class="row" style="margin-top:8px">
+<div class="metric"><span>Match forecasts tested</span><b id="tested">0</b></div>
+<div class="metric"><span>Current streak</span><b id="streak">—</b></div>
+</div>
+</div>
 </div>
 
 <div class="card">
-<b>Live Tick Stream - LAST: <span id="last">-</span> <span id="dot" style="color:red">●</span></b>
-<div id="stream" style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:10px"></div>
-<button onclick="start()" style="margin-top:10px">🔄 Re-scan market</button>
-<small id="footer"></small>
-<div id="log" style="font-size:10px;color:#999;margin-top:5px"></div>
+<h2>Digit distribution</h2>
+<div id="distribution" class="grid"></div>
+<div id="distNote" class="note">Waiting for digits.</div>
+</div>
+
+<div class="card">
+<h2>Uniformity test — chi-square</h2>
+<div class="row">
+<div class="metric"><span>Chi-square statistic</span><b id="chi">—</b></div>
+<div class="metric"><span>Approx. critical value</span><b id="critical">—</b></div>
+</div>
+<p id="chiNote" class="note">Collect at least 100 ticks. This is a diagnostic test, not a prediction tool.</p>
+</div>
+
+<div class="card">
+<h2>Confluence signals</h2>
+<p class="note">These estimates use the selected rolling window. WAIT indicates insufficient data or no directional lean under the chosen rule. Probabilities are not guarantees.</p>
+<div id="signals">Collect at least 30 ticks to begin.</div>
+</div>
+
+<div class="card">
+<h2>Matches / Differs — forward validation</h2>
+<p class="note">The model estimates the probability of the selected digit using only earlier ticks. Its forecast is saved before the next tick arrives. Each subsequent tick settles the forecast. The baseline always predicts Differs, which has a 90% theoretical hit rate under a uniform-digit assumption. Compare both accuracy and Brier score.</p>
+<div class="row">
+<div class="metric"><span>Model hit rate</span><b id="modelRate">—</b></div>
+<div class="metric"><span>Always-Differs hit rate</span><b id="baseRate">—</b></div>
+</div>
+<div class="row" style="margin-top:8px">
+<div class="metric"><span>Model Brier score ↓</span><b id="modelBrier">—</b></div>
+<div class="metric"><span>Baseline Brier score ↓</span><b id="baseBrier">—</b></div>
+</div>
+<div id="valNote" class="note" style="margin-top:10px">No completed forecasts yet.</div>
+</div>
+
+<div class="card">
+<h2>Even / Odd and Over / Under</h2>
+<div id="otherSignals">Waiting for enough ticks.</div>
+<p class="note">Over means digits 5–9; Under means 0–4. Their uniform-digit baseline is 50/50. Even/Odd is also 50/50.</p>
+</div>
+
+<div class="card">
+<h2>Transition analysis</h2>
+<div id="transition" class="note">Waiting for enough observations.</div>
+</div>
+
+<div class="card">
+<h2>Recent digits</h2>
+<div id="history" style="line-height:2;overflow-wrap:anywhere">No ticks received.</div>
+</div>
+
+<div class="card">
+<h2>Validation controls</h2>
+<button id="reset" class="secondary">RESET VALIDATION SCORES</button>
+<p class="note" style="margin-top:8px">Resetting scores clears pending forecasts but keeps collected ticks. Refreshing the page clears all session data.</p>
+</div>
+
+<div class="card">
+<h2>Important limitations</h2>
+<p class="note">This application receives public tick data. It cannot access Deriv's internal random generator or predict its state. A chi-square result cannot establish that a digit is predictable. High hit rates do not prove profitability: contract payouts, transaction costs and the true probability must be considered. No trades are executed by this page.</p>
 </div>
 
 <script>
-let ws, ticks=[], symbol='R_25';
-function log(m){document.getElementById('log').innerText=m; console.log(m);}
+"use strict";
+const $=id=>document.getElementById(id);
+const MAX=1000;
+let ws=null, generation=0, manual=true;
+let retryTimer=null, pingTimer=null, timeoutTimer=null, retryDelay=1500;
+let digits=[], received=0, pending=null;
 
-function start(){
- symbol=document.getElementById('volSelect').value;
- let txt=document.getElementById('volSelect').options[document.getElementById('volSelect').selectedIndex].text;
- document.getElementById('marketLabel').innerText='Analyzing: '+txt+' - LIVE';
- document.getElementById('footer').innerText=txt+' - Deriv LIVE';
- ticks=[];
- if(ws) try{ws.close()}catch(e){}
- // FIX: Use binaryws.com + app_id 36825 (works on github.io)
- ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=36825');
- ws.onopen=()=>{
-   document.getElementById('status').innerText='● LIVE Connected '+symbol;
-   document.getElementById('status').style.color='#fff';
-   document.getElementById('dot').style.color='#10b981';
-   log('Connected, subscribing '+symbol);
-   ws.send(JSON.stringify({ticks_history:symbol, count:100, end:'latest', style:'ticks'}));
- };
- ws.onmessage=(e)=>{
-   let data=JSON.parse(e.data);
-   if(data.error){log('Error:'+data.error.message); return;}
-   if(data.history){
-     log('Got history '+data.history.prices.length);
-     ticks=[];
-     data.history.prices.forEach(p=>{
-       let s=p.toString(); let d=parseInt(s.slice(-1));
-       if(!isNaN(d)) ticks.push(d);
-     });
-     update();
-     // now subscribe live
-     ws.send(JSON.stringify({ticks:symbol, subscribe:1}));
-   }
-   if(data.tick){
-     let price=data.tick.quote;
-     let s=price.toString(); let d=parseInt(s.slice(-1));
-     if(!isNaN(d)){
-       ticks.push(d); if(ticks.length>100) ticks.shift();
-       document.getElementById('price').innerText='Price: '+price+' - Last: '+d;
-       document.getElementById('last').innerText=d;
-       update();
-     }
-   }
- };
- ws.onerror=(err)=>{log('WS Error, retrying...'); document.getElementById('status').innerText='Disconnected - retry in 2s'; setTimeout(start,2000);}
- ws.onclose=()=>{log('WS Closed, retrying...'); document.getElementById('status').innerText='Disconnected - Reconnecting...'; setTimeout(start,2000);}
+const score={
+ tested:0,correct:0,baseCorrect:0,
+ brierSum:0,baseBrierSum:0
+};
+
+function pct(x){
+ return Number.isFinite(x)?(100*x).toFixed(2)+"%":"—";
+}
+function fmt(x){
+ return Number.isFinite(x)?x.toFixed(3):"—";
+}
+function activeDigits(){
+ return digits.slice(0,Number($("win").value));
+}
+function counts(arr){
+ const c=Array(10).fill(0);
+ arr.forEach(d=>c[d]++);
+ return c;
+}
+function smooth(count,total,k){
+ return (count+1)/(total+k);
 }
 
-function update(){
- if(ticks.length==0) return;
- let c={}; for(let i=0;i<=9;i++) c[i]=0; ticks.forEach(d=>{if(c[d]!==undefined) c[d]++});
- let hot=Object.keys(c).reduce((a,b)=>c[a]>c[b]?a:b);
- let conf=((c[hot]/ticks.length)*100).toFixed(1);
- document.getElementById('counter').innerText=ticks.length+'/100 - HOT:'+hot+'='+c[hot];
- document.getElementById('bar').style.width=ticks.length+'%';
- document.getElementById('hot').innerText=hot;
- document.getElementById('conf').innerText=conf+'%';
- document.getElementById('trade').innerText=hot+' ('+conf+'%)';
- let txt=''; for(let i=0;i<=9;i++){ let p=((c[i]/ticks.length)*100).toFixed(0); txt+=i+':'+c[i]+' ('+p+'%) '+(i==hot?'🔥':'')+' | '; }
- document.getElementById('dist').innerText=txt;
- let h=''; ticks.slice(-50).forEach(t=>{ let cls=t==hot?'tick hot':'tick'; h+=`<div class="${cls}">${t}</div>`; });
- document.getElementById('stream').innerHTML=h;
+// Wilson-Hilferty approximation for chi-square critical value.
+function chiCritical(df,z=3.090232){
+ const t=2/(9*df);
+ return df*Math.pow(1-t+z*Math.sqrt(t),3);
+}
+function chiStatistic(c){
+ const n=c.reduce((a,b)=>a+b,0);
+ if(n===0)return NaN;
+ const expected=n/c.length;
+ return c.reduce((sum,v)=>sum+(v-expected)**2/expected,0);
 }
 
-document.getElementById('volSelect').addEventListener('change',start);
-start();
+// Estimated match probability from historical observations only.
+function estimateMatch(arr,target){
+ const c=counts(arr);
+ return smooth(c[target],arr.length,10);
+}
+function forecast(arr){
+ if(arr.length<30)return null;
+ const target=Number($("target").value);
+ const p=estimateMatch(arr,target);
+ const even=arr.filter(d=>d%2===0).length;
+ const over=arr.filter(d=>d>4).length;
+ return {
+  target,p,
+  match:p>=0.58?"MATCH":p<=0.08?"DIFFERS":"WAIT",
+  parity:smooth(even,arr.length,2)/1,
+  over:smooth(over,arr.length,2)/1
+ };
+}
+function settle(actual){
+ if(!pending)return;
+ const p=pending;
+ const hit=(actual===p.target);
+ const baseHit=!hit;
+ score.tested++;
+ if((p.call==="MATCH"&&hit)||(p.call==="DIFFERS"&&!hit))score.correct++;
+ if(baseHit)score.baseCorrect++;
+ score.brierSum+=(p.p-(hit?1:0))**2;
+ score.baseBrierSum+=(0.1-(hit?1:0))**2;
+ pending=null;
+}
+function recordForecast(arr){
+ const f=forecast(arr);
+ if(!f)return;
+ // Record a new forecast before the next tick arrives.
+ pending={target:f.target,p:f.p,call:f.match};
+}
+function card(title,signal,detail){
+ const cls=signal==="WAIT"?"yellow":
+  signal==="MATCH"||signal==="EVEN"||signal==="OVER"?"green":
+  "red";
+ return '<div class="signal"><div class="row"><div><b>'+title+'</b><div class="note">'+detail+'</div></div><b class="'+cls+'">'+signal+'</b></div></div>';
+}
+function render(){
+ const arr=activeDigits(),n=arr.length,c=counts(arr);
+ $("received").textContent=received;
+ $("stored").textContent=digits.length;
+ $("history").textContent=digits.slice(0,100).join(" · ")||"No ticks received.";
+
+ const max=Math.max(...c);
+ const min=Math.min(...c.filter(x=>x>0),Infinity);
+ $("distribution").innerHTML=c.map((v,d)=>{
+  const p=n?v/n:0;
+  const cl=n&&v===max?"green":n&&v===min?"red":"";
+  return '<div class="tile"><b class="'+cl+'">'+d+'</b><small>'+v+' · '+pct(p)+'</small><div class="bar"><i style="width:'+(p*100)+'%"></i></div></div>';
+ }).join("");
+ $("distNote").textContent=n
+  ?"Window: "+n+" ticks. Uniform expectation: "+(n/10).toFixed(1)+" observations per digit."
+  :"Waiting for digits.";
+
+ if(n>=100){
+  const stat=chiStatistic(c),crit=chiCritical(9);
+  $("chi").textContent=fmt(stat);
+  $("critical").textContent=fmt(crit);
+  $("chiNote").textContent=stat>crit
+   ?"Observed distribution differs from uniformity at the approximate 0.001 threshold. This does not show predictability."
+   :"This sample does not exceed the approximate 0.001 threshold. This does not prove randomness or independence.";
+ }else{
+  $("chi").textContent="—";$("critical").textContent="—";
+  $("chiNote").textContent="Collect at least 100 ticks. The test is only a screening diagnostic.";
+ }
+
+ let streak=0;
+ if(n){for(const d of arr){if(d!==arr[0])break;streak++;}}
+ $("streak").textContent=n?arr[0]+" × "+streak:"—";
+
+ const f=forecast(arr);
+ if(!f){
+  $("signals").textContent="Collect at least 30 ticks.";
+  $("otherSignals").textContent="Collect at least 30 ticks.";
+  $("transition").textContent="Collect at least 30 ticks.";
+ }else{
+  const target=f.target;
+  $("signals").innerHTML=
+   card("Matches digit "+target,f.match,
+    "Estimated match probability "+pct(f.p)+"; theoretical uniform baseline 10%.")+
+   card("Differs digit "+target,f.match==="MATCH"?"WAIT":f.match==="DIFFERS"?"DIFFERS":"WAIT",
+    "Estimated Differs probability "+pct(1-f.p)+". WAIT avoids treating a weak estimate as a confident signal.");
+
+  const pEven=f.parity,pOver=f.over;
+  const paritySignal=pEven>=.58?"EVEN":pEven<=.42?"ODD":"WAIT";
+  const overSignal=pOver>=.58?"OVER":pOver<=.42?"UNDER":"WAIT";
+  $("otherSignals").innerHTML=
+   card("Even / Odd",paritySignal,"Smoothed even probability "+pct(pEven)+".")+
+   card("Over 4 / Under 5",overSignal,"Smoothed over probability "+pct(pOver)+".");
+
+  // Transitions use chronological adjacent pairs in the selected sample.
+  const trans=Array.from({length:10},()=>Array(10).fill(0));
+  for(let i=0;i+1<arr.length;i++)trans[arr[i+1]][arr[i]]++;
+  const previous=arr[0];
+  const row=trans.map(r=>r[previous]);
+  const total=row.reduce((a,b)=>a+b,0);
+  const top=row.indexOf(Math.max(...row));
+  $("transition").innerHTML=total
+   ?"Previous digit: <b>"+previous+"</b>. Observed successors: "+total+
+    ". Most frequent next digit in this sample: <b>"+top+"</b> ("+pct(row[top]/total)+"). Descriptive only; sample size may be small."
+   :"Not enough transitions for this digit.";
+ }
+
+ $("tested").textContent=score.tested;
+ $("modelRate").textContent=score.tested?pct(score.correct/score.tested):"—";
+ $("baseRate").textContent=score.tested?pct(score.baseCorrect/score.tested):"—";
+ $("modelBrier").textContent=score.tested?fmt(score.brierSum/score.tested):"—";
+ $("baseBrier").textContent=score.tested?fmt(score.baseBrierSum/score.tested):"—";
+ $("valNote").textContent=score.tested
+  ?"Completed forecasts: "+score.tested+". Brier scores are lower when probability estimates are better calibrated. A single session is not enough to establish a durable edge."
+  :"No completed forecasts. Each saved forecast must wait for a later tick to be scored.";
+}
+
+function extractDigit(quote,pipSize){
+ const p=Number(pipSize);
+ if(!Number.isInteger(p)||p<0||p>10)return NaN;
+ const fixed=Number(quote).toFixed(p);
+ const clean=fixed.replace(/\D/g,"");
+ return clean.length?Number(clean[clean.length-1]):NaN;
+}
+function status(message,color){
+ $("status").textContent=message;
+ $("status").style.color=color||"var(--yellow)";
+}
+function clearTimers(){
+ if(retryTimer)clearTimeout(retryTimer);
+ if(pingTimer)clearInterval(pingTimer);
+ if(timeoutTimer)clearTimeout(timeoutTimer);
+ retryTimer=pingTimer=timeoutTimer=null;
+}
+function disconnect(){
+ manual=true;generation++;clearTimers();
+ if(ws){const s=ws;ws=null;try{s.close();}catch(e){}}
+ status("Disconnected","var(--muted)");
+ $("diag").textContent="Connection closed by user.";
+}
+function scheduleReconnect(g){
+ if(manual||g!==generation)return;
+ clearTimeout(retryTimer);
+ retryTimer=setTimeout(()=>{
+  if(!manual&&g===generation)connect();
+ },retryDelay);
+ retryDelay=Math.min(20000,Math.round(retryDelay*1.6));
+}
+function connect(){
+ manual=false;
+ generation++;
+ const g=generation;
+ clearTimers();
+ if(ws){const old=ws;ws=null;try{old.close();}catch(e){}}
+ const symbol=$("market").value;
+ status("Connecting to Deriv…");
+ $("diag").textContent="Opening WebSocket connection.";
+ let socket;
+ try{
+  socket=new WebSocket("wss://ws.derivws.com/websockets/v3?app_id=1089");
+ }catch(e){
+  status("WebSocket unavailable","var(--red)");
+  $("diag").textContent=String(e);
+  scheduleReconnect(g);return;
+ }
+ ws=socket;
+ timeoutTimer=setTimeout(()=>{
+  if(g===generation&&socket.readyState!==WebSocket.OPEN){
+   status("Connection timeout","var(--red)");
+   $("diag").textContent="No connection within 12 seconds. Check internet and WebSocket access.";
+   try{socket.close();}catch(e){}
+  }
+ },12000);
+
+ socket.onopen=()=>{
+  if(g!==generation)return;
+  clearTimeout(timeoutTimer);timeoutTimer=null;
+  retryDelay=1500;
+  status("Connected — requesting ticks","var(--green)");
+  $("diag").textContent="WebSocket open. Subscribing to "+symbol+".";
+  socket.send(JSON.stringify({ticks:symbol,subscribe:1}));
+  pingTimer=setInterval(()=>{
+   if(socket.readyState===WebSocket.OPEN){
+    try{socket.send(JSON.stringify({ping:1}));}catch(e){}
+   }
+  },30000);
+ };
+ socket.onmessage=event=>{
+  if(g!==generation)return;
+  let msg;
+  try{msg=JSON.parse(event.data);}catch(e){return;}
+  if(msg.error){
+   status("Deriv API error","var(--red)");
+   $("diag").textContent=(msg.error.code||"Error")+": "+(msg.error.message||"Unknown error");
+   return;
+  }
+  if(!msg.tick)return;
+  const t=msg.tick;
+  const d=extractDigit(t.quote,t.pip_size);
+  if(!Number.isInteger(d)||d<0||d>9){
+   $("diag").textContent="Tick received, but its final digit could not be safely extracted.";
+   return;
+  }
+
+  // Score the previous forecast BEFORE adding this tick to the history.
+  settle(d);
+
+  received++;
+  digits.unshift(d);
+  if(digits.length>MAX)digits.pop();
+
+  $("price").textContent=String(t.quote);
+  $("digit").textContent=d;
+  $("time").textContent=new Date(Number(t.epoch)*1000).toLocaleTimeString();
+  status("LIVE — "+symbol,"var(--green)");
+  $("diag").textContent="Last tick received at "+new Date(Number(t.epoch)*1000).toLocaleString();
+
+  // Create the next forecast from data that exists now.
+  recordForecast(activeDigits());
+  render();
+ };
+ socket.onerror=()=>{
+  if(g!==generation)return;
+  status("WebSocket error","var(--red)");
+  $("diag").textContent="Connection failed or was blocked. Wait for reconnect or try again.";
+ };
+ socket.onclose=event=>{
+  if(g!==generation)return;
+  clearTimers();ws=null;
+  if(manual)return;
+  status("Disconnected — retrying","var(--yellow)");
+  $("diag").textContent="Socket closed (code "+event.code+"). Automatic reconnect scheduled.";
+  scheduleReconnect(g);
+ };
+}
+
+$("connect").addEventListener("click",connect);
+$("disconnect").addEventListener("click",disconnect);
+$("win").addEventListener("change",render);
+$("target").addEventListener("change",()=>{
+ pending=null;
+ render();
+});
+$("market").addEventListener("change",()=>{
+ digits=[];received=0;pending=null;
+ for(const k of Object.keys(score)){
+  score[k]=0;
+ }
+ render();
+ if(!manual)connect();
+});
+$("reset").addEventListener("click",()=>{
+ score.tested=0;score.correct=0;score.baseCorrect=0;
+ score.brierSum=0;score.baseBrierSum=0;
+ pending=null;render();
+});
+render();
 </script>
-</body></html>
+</body>
+</html>
