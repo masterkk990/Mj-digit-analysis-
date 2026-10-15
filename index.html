@@ -1,150 +1,123 @@
 <!DOCTYPE html>
 <html><head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matches Scanner LIVE - Deriv</title>
+<title>Matches LIVE FIX</title>
 <style>
 body{font-family:Arial;background:#f2f5f9;margin:0;padding:8px}
 .card{background:#fff;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 .header{background:linear-gradient(90deg,#00c853,#0ea5e9);color:#fff;padding:12px;border-radius:12px 12px 0 0;margin:-12px -12px 12px -12px;text-align:center}
 select{width:100%;padding:12px;border-radius:8px;border:2px solid #10b981;background:#e0f2fe;font-size:16px;font-weight:bold}
-.tick{padding:8px;text-align:center;border-radius:6px;background:#e5e7eb;font-weight:bold;font-size:14px}
-.tick.hot{background:#10b981;color:#fff;transform:scale(1.05)}
-.live{color:#059669;font-weight:bold}
-button{background:linear-gradient(90deg,#0d9488,#2563eb);color:#fff;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold;font-size:16px}
-.progress{height:12px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin:8px 0}
-.bar{height:100%;background:linear-gradient(90deg,#10b981,#0ea5e9);width:0%}
+.tick{padding:8px;text-align:center;border-radius:6px;background:#e5e7eb;font-weight:bold}
+.tick.hot{background:#10b981;color:#fff}
+button{background:linear-gradient(90deg,#0d9488,#2563eb);color:#fff;border:none;padding:12px;border-radius:8px;width:100%;font-weight:bold}
 </style>
 </head><body>
 
 <div class="card">
-<div class="header"><h2 style="margin:0">Matches Signal Scanner - LIVE DERIV</h2><small id="connectionStatus">Connecting to Deriv...</small></div>
-
-<label style="font-weight:bold;color:#1e3a8a">🌐 Volatility Index Selection</label>
+<div class="header"><h2 style="margin:0">Matches Signal Scanner - LIVE DERIV</h2><small id="status" style="color:yellow">Connecting...</small></div>
+<label style="font-weight:bold">🌐 Volatility Index Selection</label>
 <select id="volSelect">
 <option value="R_10">Volatility 10 Index</option>
 <option value="R_25" selected>Volatility 25 Index</option>
 <option value="R_50">Volatility 50 Index</option>
 <option value="R_75">Volatility 75 Index</option>
 <option value="R_100">Volatility 100 Index</option>
-<option value="1HZ10V">Volatility 10 (1s)</option>
-<option value="1HZ25V">Volatility 25 (1s)</option>
-<option value="1HZ50V">Volatility 50 (1s)</option>
-<option value="1HZ75V">Volatility 75 (1s)</option>
-<option value="1HZ100V">Volatility 100 (1s)</option>
+<option value="1HZ10V">Vol 10 (1s)</option>
+<option value="1HZ25V">Vol 25 (1s)</option>
+<option value="1HZ50V">Vol 50 (1s)</option>
+<option value="1HZ75V">Vol 75 (1s)</option>
+<option value="1HZ100V">Vol 100 (1s)</option>
 </select>
-<small id="marketLabel" class="live" style="display:block;margin-top:6px">Analyzing: Volatility 25 Index - LIVE</small>
+<small id="marketLabel" style="color:#059669;font-weight:bold;display:block;margin-top:6px"></small>
 </div>
 
-<div class="card">
-<div style="display:flex;justify-content:space-between"><b>TRADE MATCH</b><small id="tickCounter">0 of 100 ticks - HOT: -</small></div>
-<div class="progress"><div class="bar" id="bar"></div></div>
-<div id="dist" style="font-size:14px;font-weight:bold">Waiting for ticks...</div>
+<div class="card"><b>TRADE MATCH</b> <small id="counter">0/100</small>
+<div style="height:10px;background:#e5e7eb;border-radius:10px;margin:8px 0"><div id="bar" style="height:100%;width:0%;background:linear-gradient(90deg,#10b981,#0ea5e9)"></div></div>
+<div id="dist">Waiting...</div>
 </div>
 
 <div class="card" style="border:2px solid #10b981;background:#f0fdf4;text-align:center">
-<div style="display:flex;justify-content:space-between"><b style="color:#059669">MATCHES SIGNAL</b><small id="livePrice">-</small></div>
-<div style="display:flex;align-items:center;gap:10px;margin:10px 0;justify-content:center">
-<div style="font-size:50px;font-weight:bold;color:#059669" id="hotDigit">-</div>
-<div style="text-align:left"><div style="font-size:12px;color:#6b7280">CONFIDENCE</div><b style="color:#059669;font-size:22px" id="confidence">0%</b><br><small>HOT digit dominant</small></div>
-</div>
-<div style="background:#fef3c7;padding:8px;border-radius:8px">🔒 Trade Digit <b id="tradeText">WAIT</b> MATCHES</div>
-<small>Use this digit in Deriv Bot - Digit Matches</small>
+<b style="color:#059669">MATCHES SIGNAL</b><br>
+<div style="font-size:50px;font-weight:bold;color:#059669" id="hot">-</div>
+<div>CONFIDENCE <b id="conf" style="color:#059669;font-size:22px">0%</b></div>
+<div style="background:#fef3c7;padding:8px;border-radius:8px;margin-top:8px">Trade Digit <b id="trade">WAIT</b> MATCHES</div>
+<div id="price" style="margin-top:6px;font-size:12px">Price: -</div>
 </div>
 
 <div class="card">
-<b>Live Tick Stream - LAST: <span id="lastDigit">-</span> <span id="wsDot" style="color:red">● LIVE</span></b>
-<div id="tickStream" style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:10px"></div>
-<button onclick="rescan()" style="margin-top:10px">🔄 Re-scan market</button>
-<small id="footerLabel">Volatility 25 Index - Deriv LIVE Real Ticks</small>
+<b>Live Tick Stream - LAST: <span id="last">-</span> <span id="dot" style="color:red">●</span></b>
+<div id="stream" style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:10px"></div>
+<button onclick="start()" style="margin-top:10px">🔄 Re-scan market</button>
+<small id="footer"></small>
+<div id="log" style="font-size:10px;color:#999;margin-top:5px"></div>
 </div>
 
 <script>
-let ws=null, ticks=[], currentSymbol='R_25';
-const app_id=1089;
+let ws, ticks=[], symbol='R_25';
+function log(m){document.getElementById('log').innerText=m; console.log(m);}
 
-function connectDeriv(symbol){
- if(ws) ws.close();
- currentSymbol=symbol;
+function start(){
+ symbol=document.getElementById('volSelect').value;
+ let txt=document.getElementById('volSelect').options[document.getElementById('volSelect').selectedIndex].text;
+ document.getElementById('marketLabel').innerText='Analyzing: '+txt+' - LIVE';
+ document.getElementById('footer').innerText=txt+' - Deriv LIVE';
  ticks=[];
- document.getElementById('tickCounter').innerText='Connecting...';
- document.getElementById('connectionStatus').innerText='Connecting to '+symbol+'...';
- ws=new WebSocket('wss://ws.derivws.com/websockets/v3?app_id='+app_id);
+ if(ws) try{ws.close()}catch(e){}
+ // FIX: Use binaryws.com + app_id 36825 (works on github.io)
+ ws=new WebSocket('wss://ws.binaryws.com/websockets/v3?app_id=36825');
  ws.onopen=()=>{
-   document.getElementById('connectionStatus').innerText='● LIVE Connected - '+symbol;
-   document.getElementById('wsDot').style.color='#10b981';
-   ws.send(JSON.stringify({ticks:symbol,subscribe:1}));
-   ws.send(JSON.stringify({ticks_history:symbol,adjust_start_time:1,count:100,end:'latest',style:'ticks'}));
+   document.getElementById('status').innerText='● LIVE Connected '+symbol;
+   document.getElementById('status').style.color='#fff';
+   document.getElementById('dot').style.color='#10b981';
+   log('Connected, subscribing '+symbol);
+   ws.send(JSON.stringify({ticks_history:symbol, count:100, end:'latest', style:'ticks'}));
  };
- ws.onmessage=(msg)=>{
-   let data=JSON.parse(msg.data);
-   if(data.tick){
-     let price=data.tick.quote;
-     let lastDigit=parseInt(price.toString().slice(-1));
-     if(isNaN(lastDigit)) lastDigit=parseInt((price*100).toString().slice(-1));
-     addTick(lastDigit,price);
-   }
-   if(data.history && data.history.prices){
+ ws.onmessage=(e)=>{
+   let data=JSON.parse(e.data);
+   if(data.error){log('Error:'+data.error.message); return;}
+   if(data.history){
+     log('Got history '+data.history.prices.length);
      ticks=[];
      data.history.prices.forEach(p=>{
-       let d=parseInt(p.toString().slice(-1));
+       let s=p.toString(); let d=parseInt(s.slice(-1));
        if(!isNaN(d)) ticks.push(d);
      });
-     updateUI();
+     update();
+     // now subscribe live
+     ws.send(JSON.stringify({ticks:symbol, subscribe:1}));
+   }
+   if(data.tick){
+     let price=data.tick.quote;
+     let s=price.toString(); let d=parseInt(s.slice(-1));
+     if(!isNaN(d)){
+       ticks.push(d); if(ticks.length>100) ticks.shift();
+       document.getElementById('price').innerText='Price: '+price+' - Last: '+d;
+       document.getElementById('last').innerText=d;
+       update();
+     }
    }
  };
- ws.onerror=()=>{document.getElementById('connectionStatus').innerText='Error - Reconnecting...'; setTimeout(()=>connectDeriv(currentSymbol),2000);}
- ws.onclose=()=>{document.getElementById('connectionStatus').innerText='Disconnected - Reconnecting...'; setTimeout(()=>connectDeriv(currentSymbol),2000);}
+ ws.onerror=(err)=>{log('WS Error, retrying...'); document.getElementById('status').innerText='Disconnected - retry in 2s'; setTimeout(start,2000);}
+ ws.onclose=()=>{log('WS Closed, retrying...'); document.getElementById('status').innerText='Disconnected - Reconnecting...'; setTimeout(start,2000);}
 }
 
-function addTick(digit,price){
- ticks.push(digit);
- if(ticks.length>100) ticks.shift();
- document.getElementById('livePrice').innerText='Price: '+price;
- document.getElementById('lastDigit').innerText=digit;
- updateUI();
-}
-
-function updateUI(){
+function update(){
  if(ticks.length==0) return;
- let count={}; for(let i=0;i<=9;i++) count[i]=0;
- ticks.forEach(d=>{if(count[d]!==undefined) count[d]++});
- let hot=Object.keys(count).reduce((a,b)=>count[a]>count[b]?a:b);
- let hotCount=count[hot];
- let conf=((hotCount/ticks.length)*100).toFixed(1);
-
- document.getElementById('tickCounter').innerText=ticks.length+' of 100 ticks - HOT:'+hot+'='+hotCount;
- document.getElementById('bar').style.width=(ticks.length)+'%';
- document.getElementById('hotDigit').innerText=hot;
- document.getElementById('confidence').innerText=conf+'%';
- document.getElementById('tradeText').innerText=hot+' - '+conf+'%';
- document.getElementById('marketLabel').innerText='Analyzing: '+document.getElementById('volSelect').options[document.getElementById('volSelect').selectedIndex].text+' - LIVE '+ticks.length+' ticks';
-
- let distText='';
- for(let i=0;i<=9;i++){
-   let pct=((count[i]/ticks.length)*100).toFixed(0);
-   let hotTag = i==hot? ' 🔥 HOT '+pct+'%' : ' '+pct+'%';
-   distText+= i+':'+count[i]+hotTag+' | ';
- }
- document.getElementById('dist').innerText=distText.slice(0,-3);
-
- let html='';
- ticks.slice(-50).forEach(t=>{
-   let cls=t==hot?'tick hot':'tick';
-   html+=`<div class="${cls}">${t}</div>`;
- });
- document.getElementById('tickStream').innerHTML=html;
+ let c={}; for(let i=0;i<=9;i++) c[i]=0; ticks.forEach(d=>{if(c[d]!==undefined) c[d]++});
+ let hot=Object.keys(c).reduce((a,b)=>c[a]>c[b]?a:b);
+ let conf=((c[hot]/ticks.length)*100).toFixed(1);
+ document.getElementById('counter').innerText=ticks.length+'/100 - HOT:'+hot+'='+c[hot];
+ document.getElementById('bar').style.width=ticks.length+'%';
+ document.getElementById('hot').innerText=hot;
+ document.getElementById('conf').innerText=conf+'%';
+ document.getElementById('trade').innerText=hot+' ('+conf+'%)';
+ let txt=''; for(let i=0;i<=9;i++){ let p=((c[i]/ticks.length)*100).toFixed(0); txt+=i+':'+c[i]+' ('+p+'%) '+(i==hot?'🔥':'')+' | '; }
+ document.getElementById('dist').innerText=txt;
+ let h=''; ticks.slice(-50).forEach(t=>{ let cls=t==hot?'tick hot':'tick'; h+=`<div class="${cls}">${t}</div>`; });
+ document.getElementById('stream').innerHTML=h;
 }
 
-function rescan(){ticks=[]; updateUI(); connectDeriv(currentSymbol);}
-
-document.getElementById('volSelect').addEventListener('change',function(){
-  let sym=this.value;
-  let txt=this.options[this.selectedIndex].text;
-  document.getElementById('footerLabel').innerText=txt+' - Deriv LIVE Real Ticks';
-  connectDeriv(sym);
-});
-
-// start
-connectDeriv('R_25');
+document.getElementById('volSelect').addEventListener('change',start);
+start();
 </script>
 </body></html>
