@@ -1,285 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MJ Digit Confluence AI - Live Validation Lab</title>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MJ DIGIT CONFLUENCE AI - TIMER + PREDICTION</title>
 <style>
-:root{
- --bg:#080d14;
- --card:#121b27;
- --line:#2a3b50;
- --green:#00e99a;
- --red:#ff6376;
- --yellow:#ffd166;
- --muted:#9aabc0;
-}
-*{box-sizing:border-box}
-body{
- margin:auto;
- padding:12px;
- max-width:1000px;
- background:var(--bg);
- color:#edf4fc;
- font:13px system-ui,Arial
-}
-h1{text-align:center;color:var(--green);font-size:21px}
-h2{font-size:15px;margin:0 0 12px}
-.sub,.note{color:var(--muted);font-size:11px;line-height:1.6}
-.sub{text-align:center;margin:7px 0 15px}
-.card{
- background:var(--card);
- border:1px solid var(--line);
- border-radius:12px;
- padding:13px;
- margin:10px 0
-}
-label{display:block;color:#a9c7ef;margin:9px 0 5px}
-select,button{
- width:100%;
- padding:11px;
- border:1px solid var(--line);
- border-radius:8px;
- background:#09111b;
- color:white;
- font:inherit
-}
-button{
- background:var(--green);
- color:#03150e;
- border:0;
- font-weight:bold
-}
-button.secondary{background:#26364a;color:white}
-button:disabled{opacity:.5}
-.row{display:flex;gap:9px;align-items:center}
-.row>*{flex:1;min-width:0}
-.status{
- text-align:center;
- padding:10px;
- border-radius:8px;
- background:#09111b;
- color:var(--yellow);
- margin-top:10px;
- overflow-wrap:anywhere
-}
-.price{text-align:center;font-size:23px;overflow-wrap:anywhere}
-.big{
- text-align:center;
- font-size:45px;
- font-weight:bold;
- color:var(--green)
-}
-.grid{
- display:grid;
- grid-template-columns:repeat(5,minmax(0,1fr));
- gap:7px
-}
-.tile{
- background:#09111b;
- border:1px solid var(--line);
- padding:9px 3px;
- border-radius:8px;
- text-align:center
-}
-.tile b{display:block;font-size:19px}
-.tile small{font-size:10px;color:var(--muted)}
-.bar{
- height:5px;
- background:#28364a;
- margin-top:5px;
- border-radius:5px;
- overflow:hidden
-}
-.bar i{display:block;height:100%;background:var(--green)}
-.metric{
- padding:10px;
- background:#09111b;
- border-radius:8px
-}
-.metric span{font-size:10px;color:var(--muted)}
-.metric b{
- display:block;
- font-size:19px;
- margin-top:4px;
- overflow-wrap:anywhere
-}
-.signal{
- padding:11px;
- border:1px solid var(--line);
- border-radius:9px;
- background:#0b131e;
- margin:8px 0
-}
-.green{color:var(--green)}
-.red{color:var(--red)}
-.yellow{color:var(--yellow)}
-
-@media(min-width:650px){
- .grid{grid-template-columns:repeat(10,minmax(0,1fr))}
- .two{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
- }
-}
+:root{--bg:#080d14;--card:#121b27;--line:#2a3b50;--green:#00e99a;--red:#ff6376;--yellow:#ffd166;--muted:#9aabc0}
+*{box-sizing:border-box}body{margin:auto;padding:12px;max-width:1100px;background:var(--bg);color:#edf4fc;font:13px system-ui}
+h1{text-align:center;color:var(--green)}.sub{text-align:center;color:var(--muted);font-size:11px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;margin:10px 0}
+label{color:#a9c7ef;display:block;margin:8px 0 5px} select,button{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#09111b;color:#fff}
+button{background:var(--green);color:#03150e;font-weight:800;border:0} button.sec{background:#26364a;color:#fff}
+.row{display:flex;gap:9px}.row>*{flex:1}
+.status{text-align:center;padding:10px;border-radius:8px;background:#09111b;color:var(--yellow);margin-top:10px}
+.price{text-align:center;font-size:24px}.big{text-align:center;font-size:56px;font-weight:900;color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.tile{background:#09111b;border:1px solid var(--line);padding:9px 3px;border-radius:8px;text-align:center}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px} @media(max-width:800px){.grid3{grid-template-columns:1fr}}
+.metric{padding:12px;background:#09111b;border-radius:10px;text-align:center}.metric span{font-size:11px;color:var(--muted)}.metric b{display:block;font-size:20px;margin-top:4px}
+.bar{height:8px;background:#09111b;border-radius:20px;overflow:hidden;margin-top:6px}.fill{height:100%}
+.timer{font-size:28px;font-weight:900;text-align:center;color:var(--yellow)}.pred{padding:10px;background:#09111b;border-left:3px solid var(--green);border-radius:8px;margin:6px 0}
 </style>
 </head>
-
 <body>
-
 <h1>🔢 MJ DIGIT CONFLUENCE AI</h1>
-
-<div class="sub">
-LIVE DERIV DATA · DIGIT STATISTICS · FORWARD VALIDATION
-</div>
+<div class="sub">TIMER · REAL TICK PREDICTIONS · MATCHES / EVEN-ODD / OVER-UNDER · LIVE</div>
 
 <div class="card">
-
-<h2>Live connection</h2>
-
-<label for="market">Synthetic index</label>
-
-<select id="market">
-<option value="1HZ10V">Volatility 10 (1s)</option>
-<option value="1HZ25V">Volatility 25 (1s)</option>
-<option value="1HZ50V">Volatility 50 (1s)</option>
-<option value="1HZ75V">Volatility 75 (1s)</option>
-<option value="1HZ100V">Volatility 100 (1s)</option>
-
-<option value="R_10">Volatility 10</option>
-<option value="R_25">Volatility 25</option>
-<option value="R_50">Volatility 50</option>
-<option value="R_75">Volatility 75</option>
-<option value="R_100" selected>Volatility 100</option>
-</select>
-
 <div class="row">
-
-<div>
-<label for="win">Analysis window</label>
-
-<select id="win">
-<option value="100">100 ticks</option>
-<option value="500">500 ticks</option>
-<option value="1000" selected>1000 ticks</option>
-</select>
-</div>
-
-<div>
-<label for="target">Matches digit</label>
-
-<select id="target">
-<option>0</option>
-<option>1</option>
-<option>2</option>
-<option>3</option>
-<option>4</option>
-<option>5</option>
-<option>6</option>
-<option selected>7</option>
-<option>8</option>
-<option>9</option>
-</select>
-</div>
-
-</div>
-
-<div class="row" style="margin-top:12px">
-
-<button id="connect">
-CONNECT LIVE
-</button>
-
-<button id="disconnect" class="secondary">
-DISCONNECT
-</button>
-
-</div>
-
-<div id="status" class="status">
-Disconnected
-</div>
-
-<div id="diag" class="note" style="margin-top:8px">
-Ready. Press CONNECT LIVE.
-</div>
-
-</div>
-
-
-<div class="two">
-
-<div class="card">
-
-<h2>Latest tick</h2>
-
-<div id="price" class="price">—</div>
-
-<div id="digit" class="big">—</div>
-
-<div id="time" class="note" style="text-align:center">
-Waiting for live data
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Session</h2>
-
-<div class="row">
-
-<div class="metric">
-<span>Ticks received</span>
-<b id="received">0</b>
-</div>
-
-<div class="metric">
-<span>Stored digits</span>
-<b id="stored">0</b>
-</div>
-
-</div>
-
-<div class="row" style="margin-top:8px">
-
-<div class="metric">
-<span>Forecasts acted on / total</span>
-<b id="tested">0 / 0</b>
-</div>
-
-<div class="metric">
-<span>Current streak</span>
-<b id="streak">—</b>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Digit distribution</h2>
-
-<div id="distribution" class="grid"></div>
-
-<div id="distNote" class="note">
-Waiting for digits.
-</div>
-
-</div>
-
-
-<div class="card">
-
-<h2>Uniformity test — chi-square</h2>
-
-<div class="row">
-
-<div class="metric
+<div><label>Market</label><select id="market"><option value="R_100" selected>R_100 Vol 100</option><option value="R_75">R_75</option><option value="R_50">R_50</option><option value="1HZ100V">1s Vol 100</option></select></div>
+<div><label>Window</label><select id="win"><option
